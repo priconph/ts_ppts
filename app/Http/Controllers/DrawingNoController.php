@@ -32,17 +32,11 @@ class DrawingNoController extends Controller
                     ->where(function($query) use ($device_name_str, $request_str) {
                         $query->where('document_no', "like",'%'.$device_name_str.'%')
                         ->orWhere('document_no', "like",'%'.$request_str.'%');
-                        
                     })
                     ->limit('200')
                     ->get();
-        
-                    // return $DrawingNo;
-
         $doc = array();
         $doc['doc'] = $DrawingNo;
-
-        // return $doc;
 
         return ($doc);
     }

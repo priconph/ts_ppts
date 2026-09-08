@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -193,9 +195,9 @@ Route::get('/packingseeder', function () {
     return view('packingseeder');
 })->name('packingseeder');
 
-Route::get('/dlabelprinting_rev6', function () {
+Route::get('/dlabelprinting_rev6_f3', function () {
     return view('dlabelprinting_shipment_dashboard');
-})->name('dlabelprinting_rev6');
+})->name('dlabelprinting_rev6_f3');
 
 
 

@@ -65,7 +65,7 @@ class OQCInspectionController extends Controller
         // return $oqc_inspection->employee_id;
 
         // return $oqc_inspection->employee_id;
-
+        // return $oqc_inspection->employee_id; //getViewandScanTray
         $user = User::where('employee_id', $oqc_inspection->employee_id)->orderBy('id', 'desc')->limit(1)->get();
         if( count($user) == 0 )
             return response()->json([ 'error' => 'Employee ID not found.' ]);

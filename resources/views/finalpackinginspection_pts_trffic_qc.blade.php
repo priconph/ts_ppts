@@ -1517,11 +1517,6 @@
             console.log(casemark_list[i][4].toLowerCase())
             console.log(casemark_ship_to.toLowerCase())
 
-            // console.log('test', input_text_filtered);
-            // console.log('test123', input_text_filtered[j]);
-            // console.log('casemark list 3',casemark_list[i][3])
-            // console.log('input_text 3',input_text_filtered[j][6])
-
             console.log(
               casemark_list[i][0] == input_text_filtered[j][0] , casemark_list[i][1] == input_text_filtered[j][1] ,
               casemark_list[i][2] == input_text_filtered[j][2] , casemark_list[i][3] == input_text_filtered[j][3] ,

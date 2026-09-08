@@ -68,7 +68,8 @@
  					<!-- general form elements -->
  					<div>
 						{{-- <iframe id="iframe_d_label_printing" src="http://rapidx/dlabel_ts_ppts_rev3?en={{Auth::user()->employee_id}}&pos={{Auth::user()->position}}"></iframe> --}}
-						<iframe id="iframe_d_label_printing" src="http://rapidx/dlabel_ts_ppts_rev6?en={{Auth::user()->employee_id}}&pos={{Auth::user()->position}}"></iframe>
+						{{-- <iframe id="iframe_d_label_printing" src="http://rapidx/dlabel_ts_ppts_rev6?en={{Auth::user()->employee_id}}&pos={{Auth::user()->position}}"></iframe> --}}
+						<iframe id="iframe_d_label_printing" src="http://rapidx/dlabel_ts_ppts_rev6_f3?en={{Auth::user()->employee_id}}&pos={{Auth::user()->position}}"></iframe>
 						<!-- <iframe id="iframe_d_label_printing" src="http://rapid/dlabelv2_test/index.php?systemname=pats"></iframe> -->
  					</div>
 				</div>

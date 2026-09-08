@@ -3183,24 +3183,27 @@ class ProductionRuncardController_rev extends Controller
     //     return response()->json(['material_kitting' => $material_kitting, 'po_no_qr' => $po_no, 'device_name_print' => $device_name_print]);
     // }
 
-    public function get_wbs_material_kitting_rev(Request $request){
+    public function get_wbs_material_kitting_rev(Request $request){ //WORKING FUNCTION
         // return 'WORKING FUNCTION';
         date_default_timezone_set('Asia/Manila');
         $material_kitting = MaterialIssuanceSubSystem::with([
-            'device_info',
-            'documents_details',
-            'material_issuance_details' => function($query){
-                $query->limit(1);
-            },
-        ])
-        ->orderby('id', 'desc')
-        ->where('po_no', $request->po_number)
-        ->first();
+                                            'device_info',
+                                            'documents_details',
+                                            'material_issuance_details' => function($query){
+                                                $query->limit(1);
+                                            },
+                                        ])
+                                        ->orderby('id', 'desc')
+                                        ->where('po_no', $request->po_number)
+                                        ->first();
+        // return $material_kitting;
 
+        // return $material_kitting;
+        // return 'asd';
         if(is_null($material_kitting)){
             // return 'tist';
             $material_kitting = YeuKitting::with([
-                // 'wbs_kitting',
+                'device_info',
                 // // 'prod_runcard_station_many_details' => function($query){
                 // //     $query->orderBy('step_num', 'desc');
                 // //     $query->where('status', 1);
@@ -3220,22 +3223,17 @@ class ProductionRuncardController_rev extends Controller
             ->orderBy('id', 'ASC')
             ->first();
 
-            // return $material_kitting;
 
             $device_name_print = 'not found';
             $device_name_print = $material_kitting->product_name;
-
-            // return $device_name_print;
-            // if ($device_name_print == null) {
-            //     // return 'qwe';
-            //     $device_name_print = $material_kitting->product_name;
-            // }else{
-            //     // return 'asd';
-            // }
+            // $material_kitting->device_code = $material_kitting->item_code; // CHRIS 03-30-2026
+            $material_kitting->device_code = $material_kitting->device_info->barcode ?? $material_kitting->item_code; // CHRIS 03-30-2026
         }else{
             $device_name_print = 'not found';
             $device_name_print = $material_kitting->device_name;
         }
+
+        // return $material_kitting->device_name;
 
 
         // return $material_kitting;
@@ -3260,7 +3258,7 @@ class ProductionRuncardController_rev extends Controller
         // return gettype($device_name_print);
         // return $material_kitting->device_name;
 
-        //TODO:Remove extension (Ex. Burn-in & Test), if the Device Name not match in WBS Issuance & Kitting
+        //TODO: MIGZ 09-04-24 Remove extension (Ex. Burn-in & Test), if the Device Name not match in WBS Issuance & Kitting
         //TODO: NOTE: Burn in Memory is include only in searching Series Name in ACDCS
         $device_name_print = CommonController::getInstance()->validate_device_name_acdcs_packing($device_name_print);
         // return $device_name_print;
@@ -3268,51 +3266,21 @@ class ProductionRuncardController_rev extends Controller
             // return 'device_print'. $device_name_print;
 
         if($material_kitting != null){
-            // if ($device_name_print == 'IC162-0322-083' || $device_name_print == 'IC51-1444-1354' || $device_name_print == 'IC51-0644-807' || $device_name_print =='IC357-1004-035P-2' || 'IC234-0484-089P-2' || 'IC51-1334.A124928'){
-            if ($device_name_print == 'IC162-0322-083'){
-                // return 'if';
-                // return $device_name_print;
-                // $doc_details_query = RapidActiveDocs::where('series',  $device_name_print ) //  12/14/23 - migs/darren: Too many series with same name //{"oqc_lotapp_po_no":"450260288000010","oqc_lotapp_device":"NP568-078-023D-1","oqc_lotapp_lot_batch_no":"6028LOT-001","oqc_lotapp_serial_no":"704","oqc_lotapp_qtt_tray":32,"oqc_lotapp_lot_sticker_cnt":"22\/22"}
-                // ->get();
-                // $doc_details_query = RapidActiveDocs::where('series', $device_name_print)
-
-                $doc_details_query = RapidActiveDocs::where(function($query) use ($device_name_print) { // modify code 04/15/26 - mdr
-                    $query->where('series', 'LIKE', '%' . $device_name_print . '%')
-                        ->orWhere('doc_title', 'LIKE', '%' . $device_name_print . '%');
-                })
-                ->whereIn('doc_type', [
-                'AA Drawing',
-                'AG Drawing',
-                'A Drawing',
-                'G Drawing',
-                'KL Drawing',
-                'YEU Drawing',
-                'KS Drawing',
-                'AC Drawing',
-                'BA Drawing',
-                'GK Drawing',
-                'GJ Drawing',
-                'B Drawing',
-                'BG Drawing',
-                'J Drawing',
-                'R Drawing',
-                ])
+            // return 'if';
+            if ($device_name_print == 'IC162-0322-083' || $device_name_print == 'IC51-1444-1354' || $device_name_print == 'IC51-0644-807' || $device_name_print =='IC357-1004-035P-2' || $device_name_print =='IC602-663-089'){
+                $doc_details_query = RapidActiveDocs::where('series',  $device_name_print ) //  12/14/23 - migs/darren: Too many series with same name
                 ->get();
-
-            }else{
+            }
+            // else if($device_name_print == 'IC564-020-1050-2(100-299)'){
+            //     $doc_details_query = RapidActiveDocs::where('series',  $device_name_print ) //  12/14/23 - migs/darren: Too many series with same name
+            //     ->get();
+            // }
+            else{
                 // return 'else';
-                // $doc_details_query = RapidActiveDocs::where('series', 'LIKE', '%' . $device_name_print . '%') // 12/14/23 - migs/darren: Too many series with same name
-                // ->get();
-                 $doc_details_query = RapidActiveDocs::where(function($query) use ($device_name_print) { // modify code 04/15/26 - mdr
-                    $query->where('series', 'LIKE', '%' . $device_name_print . '%')
-                        ->orWhere('doc_title', 'LIKE', '%' . $device_name_print . '%');
-                })
-                ->whereIn('doc_type', ['AA Drawing', 'AG Drawing','A Drawing', 'G Drawing', 'KL Drawing', 'YEU Drawing'])
+                $doc_details_query = RapidActiveDocs::where('series', 'LIKE', '%' . $device_name_print . '%') // 12/14/23 - migs/darren: Too many series with same name
                 ->get();
             }
 
-
-            // return 'asd';
             // return '$doc_details_query';
             // return $doc_details_query;
             // $doc_a_drawing_query = collect($doc_details_query)->where('doc_type', 'AC Drawing')->flatten(1);
@@ -3320,7 +3288,6 @@ class ProductionRuncardController_rev extends Controller
             // $doc_o_drawing_query = collect($doc_details_query)->where('doc_type', 'KL Drawing')->flatten(1);
 
             // return response()->json(['sam' => $doc_details_query]);
-            // return 'qwe';
 
             $doc_orig_a_drawing_query = $doc_details_query->filter(
                         function($item) {
@@ -3358,7 +3325,7 @@ class ProductionRuncardController_rev extends Controller
                 $doc_g_drawing_query = $query->where("doc_type", "=",'YEU Drawing')->where("doc_no", "like",'YEU-G%')->get();
             }
 
-         //-Nessa
+            //-Nessa
             if($material_kitting->count() > 0){
                 $po_no = QrCode::format('png')
                                 ->size(200)->errorCorrection('H')
@@ -3369,8 +3336,6 @@ class ProductionRuncardController_rev extends Controller
 
         }
 
-        // return response()->json(['material_kitting' => $material_kitting, 'po_no_qr' => $po_no, 'device_name_print' => $device_name_print]);
-        // return response()->json(['material_kitting' => $material_kitting, 'po_no_qr' => $po_no, 'device_name_print' => $device_name_print, 'a_drawing' => $doc_a_drawing_query, 'g_drawing' => $doc_g_drawing_query, 'o_drawing' => $doc_o_drawing_query, 'orig_a_drawing' => $doc_orig_a_drawing_query]);
         return response()->json(['material_kitting' => $material_kitting, 'po_no_qr' => $po_no, 'device_name_print' => $device_name_print, 'a_drawing' => $doc_a_drawing_query, 'g_drawing' => $doc_g_drawing_query, 'jrdjksdcgj_drawing' => $doc_jrdjksdcgj_drawing_query, 'orig_a_drawing' => $doc_orig_a_drawing_query, 'gpmd_drawing' => $doc_gpmd_drawing_query]);
     }
 
@@ -5014,6 +4979,7 @@ class ProductionRuncardController_rev extends Controller
     }
 
     public function edit_prod_runcard_station1(Request $request){
+        // return 'work';
         date_default_timezone_set('Asia/Manila');
         $return_title = '<i class="fa fa-check-circle text-success"></i> Saved';
         $return_body = 'Record has been saved.';
@@ -5238,7 +5204,7 @@ class ProductionRuncardController_rev extends Controller
 
     public function edit_prod_runcard_station(Request $request){
 
-        return "11"; // Not working
+        // return "11"; // Not working
 
         date_default_timezone_set('Asia/Manila');
         $return_title = '<i class="fa fa-check-circle text-success"></i> Saved';
@@ -8125,7 +8091,7 @@ class ProductionRuncardController_rev extends Controller
     public function getTrayListByLotAppID(Request $request)
     {
         // return 'true';
-      $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
+        $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
         $result = ProductionRuncardStation::where('production_runcard_id', $request->lotapp_id)->where('status', 1)->get();
         $ttl = 0;
         for ($i=0; $i < count($result); $i++)
@@ -8140,9 +8106,8 @@ class ProductionRuncardController_rev extends Controller
             $device_name_print = $prd_runcards[0]->device_name;
             $device_name_print = CommonController::getInstance()->validate_device_name($device_name_print);
         }
-        // $device = Device::where('name', $prd_runcards[0]->device_name)->get(); 04082024 by nessa {"oqc_lotapp_po_no":"450260268600010","oqc_lotapp_device":"NP383-036-309","oqc_lotapp_lot_batch_no":"02686 LOT-001","oqc_lotapp_serial_no":"33","oqc_lotapp_qtt_tray":33,"oqc_lotapp_lot_sticker_cnt":"1\/1"}  NP383-036-309 - (Burn-in Memory) NP383-036-309 - (Burn-in Memory)
-
-       $device = Device::where('name', $device_name_print)->where('status',1)->get();
+        // $device = Device::where('name', $prd_runcards[0]->device_name)->get(); 04082024 by nessa
+        $device = Device::where('name', $device_name_print)->where('status',1)->get();
 
         $prd_runcards_counter = [];
         for ($i=0; $i < count($prd_runcards); $i++)
@@ -8168,7 +8133,7 @@ class ProductionRuncardController_rev extends Controller
         $lot_start_counter = ceil(( $lot_number - 1 ) * (  ceil((int)$device[0]->ship_boxing / (int)$device[0]->boxing ))); // To remove duplicate
         // return $lot_start_counter;
         $_stations__ = [];
-        if( $prd_runcards[0]->po_qty <= 99 ){
+        if( $prd_runcards[0]->po_qty <= 99 || $prd_runcards[0]->po_no = '450257796000010'){
             $lot_start_counter = 0;
             // $sticker_cnt = 1;
             $current_lot_id_is_selected = false;
