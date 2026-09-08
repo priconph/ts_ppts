@@ -1838,7 +1838,7 @@
               if( data['result'] ){
 
                 console.log( 3 )
-                // alert( $('#view_lotapp_id').val() )
+                // alert( $('#view_lotapp_id').val() ) //Q108
 
                 // alert($('#inspection_modal_Inspector').val())
 
@@ -1848,8 +1848,9 @@
                   let name = data['data'][0]['name']/*.split(' ')*/
 
                   // if( $('#inspection_modal_Inspector').val().toLowerCase() == name[0].toLowerCase() ){
-                  if( name.toLowerCase().indexOf($('#inspection_modal_Inspector').val().toLowerCase()) != -1 ){
+                  console.log('name',name.toLowerCase().indexOf($('#inspection_modal_Inspector').val().toLowerCase()));
 
+                  if( name.toLowerCase().indexOf($('#inspection_modal_Inspector').val().toLowerCase()) != -1 ){
                     $.ajax({
                       'data'      : {
                         _token: '{{ csrf_token() }}',
@@ -1881,17 +1882,17 @@
                       }
                     })
 
-                    }else{
-                      toastr.error('Invalid Inspector ID.')
+                   }else{
+                      toastr.error('Invalid Inspector ID. The Valid User'+$('#inspection_modal_Inspector').val())
                     }
 
                 }else{
-                  toastr.error('Invalid Inspector ID.')
+                  toastr.error('Invalid Inspector ID. The Valid User'+$('#inspection_modal_Inspector').val())
                 }
 
+              }else{
+                toastr.error( 'Invalid Employee ID. The Valid User'+$('#inspection_modal_Inspector').val())
               }
-              else
-                toastr.error( 'Invalid Employee ID' )
 
               $('#modal_qrcode_scanner_for_save_wbs_deatail_employee_id').val('')
             },

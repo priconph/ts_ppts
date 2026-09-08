@@ -3268,11 +3268,10 @@ class ProductionRuncardController_rev extends Controller
             // return 'device_print'. $device_name_print;
 
         if($material_kitting != null){
-            // if ($device_name_print == 'IC162-0322-083' || $device_name_print == 'IC51-1444-1354' || $device_name_print == 'IC51-0644-807' || $device_name_print =='IC357-1004-035P-2' || 'IC234-0484-089P-2' || 'IC51-1334.A124928'){
-            if ($device_name_print == 'IC162-0322-083'){
-                // return 'if';
+            if ($device_name_print == 'IC162-0322-083' || $device_name_print == 'IC51-1444-1354' || $device_name_print == 'IC51-0644-807' || $device_name_print =='IC357-1004-035P-2' || 'IC234-0484-089P-2'){
+                // return 'if';/
                 // return $device_name_print;
-                // $doc_details_query = RapidActiveDocs::where('series',  $device_name_print ) //  12/14/23 - migs/darren: Too many series with same name //{"oqc_lotapp_po_no":"450260288000010","oqc_lotapp_device":"NP568-078-023D-1","oqc_lotapp_lot_batch_no":"6028LOT-001","oqc_lotapp_serial_no":"704","oqc_lotapp_qtt_tray":32,"oqc_lotapp_lot_sticker_cnt":"22\/22"}
+                // $doc_details_query = RapidActiveDocs::where('series',  $device_name_print ) //  12/14/23 - migs/darren: Too many series with same name
                 // ->get();
                 // $doc_details_query = RapidActiveDocs::where('series', $device_name_print)
 
@@ -8125,7 +8124,7 @@ class ProductionRuncardController_rev extends Controller
     public function getTrayListByLotAppID(Request $request)
     {
         // return 'true';
-      $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
+        $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
         $result = ProductionRuncardStation::where('production_runcard_id', $request->lotapp_id)->where('status', 1)->get();
         $ttl = 0;
         for ($i=0; $i < count($result); $i++)
@@ -8140,9 +8139,8 @@ class ProductionRuncardController_rev extends Controller
             $device_name_print = $prd_runcards[0]->device_name;
             $device_name_print = CommonController::getInstance()->validate_device_name($device_name_print);
         }
-        // $device = Device::where('name', $prd_runcards[0]->device_name)->get(); 04082024 by nessa {"oqc_lotapp_po_no":"450260268600010","oqc_lotapp_device":"NP383-036-309","oqc_lotapp_lot_batch_no":"02686 LOT-001","oqc_lotapp_serial_no":"33","oqc_lotapp_qtt_tray":33,"oqc_lotapp_lot_sticker_cnt":"1\/1"}  NP383-036-309 - (Burn-in Memory) NP383-036-309 - (Burn-in Memory)
-
-       $device = Device::where('name', $device_name_print)->where('status',1)->get();
+        // $device = Device::where('name', $prd_runcards[0]->device_name)->get(); 04082024 by nessa
+        $device = Device::where('name', $device_name_print)->where('status',1)->get();
 
         $prd_runcards_counter = [];
         for ($i=0; $i < count($prd_runcards); $i++)

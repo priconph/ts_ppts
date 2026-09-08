@@ -704,7 +704,7 @@ class OQCLotAppController extends Controller
         // return 'asd';
         // return 'get_oqc_lot_app_data';
         // return $request['device_name'];
-        $oqc_inspections = ProductionRuncard::with([
+      $oqc_inspections = ProductionRuncard::with([
             'oqc_details' => function($query){
                 $query->orderBy('submission', 'DESC');},
             'oqc_details.user_details',
@@ -719,7 +719,7 @@ class OQCLotAppController extends Controller
             'wbs_kitting.device_info'
         ])
         ->where('po_no',$request['po_no'])
-        ->whereNull('deleted_at') // Condition to hide runcards
+        ->whereNull('deleted_at') // MIGZ 03-05-24 Condition to hide runcards
         // ->where(function($query){
         //     $query
         //         ->where('status', 7)
@@ -735,14 +735,14 @@ class OQCLotAppController extends Controller
 
         // return $request['device_name'];
 
-        //Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+        //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
         $wbs_device_name = $request['device_name'];
         $device_name_print = 'not found';
         $device_name_print = CommonController::getInstance()->validate_device_name($wbs_device_name);
         // return $wbs_device_name;
 
         if( count($oqc_inspections) > 0 ){
-            $device = Device::where('name', $device_name_print)->where('status', 1)->get();
+          $device = Device::where('name', $device_name_print)->where('status', 1)->get();
             // $device = Device::where('name', $wbs_device_name)->where('status', 1)->get();
         }else{
             $device = null;

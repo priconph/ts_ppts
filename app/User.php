@@ -10,6 +10,7 @@ use App\Model\OQCStamp;
 
 class User extends Authenticatable
 {
+    
     use Notifiable;
 
     /**

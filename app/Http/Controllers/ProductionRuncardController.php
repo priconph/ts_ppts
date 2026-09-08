@@ -5286,7 +5286,7 @@ class ProductionRuncardController extends Controller
                                         $final_runcard_no = "";
                                         $explode_runcard_no = "";
 
-                                        if($prod_runcards->count() > 0){
+                                    if($prod_runcards->count() > 0){
                                             $explode_runcard_no = explode('-', $prod_runcards[0]->runcard_no);
 
                                             // $explode_runcard_no[1] = str_pad($explode_runcard_no[1] + 1,4,"0", STR_PAD_LEFT);
@@ -5299,7 +5299,7 @@ class ProductionRuncardController extends Controller
                                             $final_runcard_no = $runcard_no . '-0001';
                                         }
 
-                                        // return $final_runcard_no;
+                                        // return $final_runcard_no; F025
                                         $prd_runcard = ProductionRuncard::where('id', $request->txt_prod_runcard_id_query)->orderBy('id','DESC')->get();
                                         //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
                                         $prd_runcard_device_name = $prd_runcard[0]->device_name;

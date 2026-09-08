@@ -284,10 +284,10 @@ class UserController extends Controller
 
         // if(isset($request->with_oqc_stamp)){
             //Error Chris WBS Print Read DB
-            // $rules['oqc_stamp'] = 'required|string|max:255|unique:oqc_stamps,status,2'; 
+            // $rules['oqc_stamp'] = 'required|string|max:255|unique:oqc_stamps,status,2';
             // $rules['oqc_stamp'] = ['required','string','max:255',Rule::unique((new OqcStamp)->getTable(), 'oqc_stamp')->ignore(2)];
         // }
-        
+
         if(isset($request->with_oqc_stamp)){
             $oqc_stamp = OqcStamp::where('oqc_stamp',$request->oqc_stamp)->count();
             if( $oqc_stamp > 0){
@@ -353,7 +353,7 @@ class UserController extends Controller
                 // throw $e;
                 return response()->json(['result' => "0", 'message' => $e]);
             }
-       
+
         }
 
     }

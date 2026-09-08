@@ -107,27 +107,19 @@ class TSPTSController extends Controller
     {
         // return 'asd';
         // return $request->po_num;
-        $subPO = substr($request->po_num, 0, 15) ?? ''; // added by migs and jd 11-06-2023
+        $subPO = substr($request->po_num, 0, 15); // added by migs and jd 11-06-2023
         $oqcvirs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
             $query->where('status', 1);
         },'prod_runcard_accessory_info','tspts_oqcvir_info' => function($query){
             $query->orderBy('created_at','desc');
-        },'tspts_oqcvir_info.inspector_info','production_runcards_device'])
+        },'tspts_oqcvir_info.inspector_info'])
         ->where('po_no', $subPO)
-        // ->whereNull('deleted_at') {"oqc_lotapp_po_no":"450260268600010","oqc_lotapp_device":"NP383-036-309","oqc_lotapp_lot_batch_no":"02686 LOT-001","oqc_lotapp_serial_no":"33","oqc_lotapp_qtt_tray":33,"oqc_lotapp_lot_sticker_cnt":"1\/1"}
-        ->where('status','>=',3)
-        // ->where('status',3),
+        ->whereNull('deleted_at')
+        ->where('status',4)
         ->get();
 
-        if($subPO != ""){
-             $withOrWithoutOverall = $oqcvirs[0]->production_runcards_device->process ?? '';
-            if($withOrWithoutOverall === 0){ //EDIT if the Device Matrix is Without Overall
-                ProductionRuncard::
-                where('po_no', $subPO)
-                ->where('status', 3)
-                ->update(['status'=>4]);
-            }
-        }
+        // return $oqcvirs;
+
 
 
         for ($i=0; $i < count($oqcvirs); $i++) {
@@ -849,7 +841,6 @@ class TSPTSController extends Controller
             }
 
           $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
-        //   return $oqcLotApp;
             // return $oqcLotApp;
             $result = ProductionRuncardStation::where('production_runcard_id', $request->lotapp_id)->where('status', 1)->get();
             $ttl = 0;
@@ -894,6 +885,7 @@ class TSPTSController extends Controller
             $lot_number = explode('-', $oqcLotApp[0]->lot_batch_no);
             $lot_number = (int)($lot_number[count($lot_number)-1]);
             // return $lot_number;
+
             /**
              * Separate the integer($lot_number) and only use ceil() function to decimal/float values as multiplier
              * Revised as of 06-20-2024 -JD
@@ -992,11 +984,9 @@ class TSPTSController extends Controller
             ->whereNull('status')
             ->orderBy('id','DESC') //Get the latest PO / DESC order
             ->get();
-
-            // return $dlabel;
             // return $dlabel[0]['id']; //The PO Exist & will get the ASC order ID
 
-        $box = DlabelBoxes::where('lot_no', $oqcLotApp[0]->lot_batch_no)
+            $box = DlabelBoxes::where('lot_no', $oqcLotApp[0]->lot_batch_no)
             ->where('d_label_id', $dlabel[0]->id ?? '') // Check id is exists
             ->orWhere('lot_id', $request->lotapp_id ?? '')
             // ->where('d_label_id', $dlabel[0]->id) // 05202025 by Nessa
@@ -1004,31 +994,19 @@ class TSPTSController extends Controller
             ->get();
 
 
+            // return $box;
 
             if( count($box) >= 1 ){
-
-                //new code with for loop 6-26-2026 - da
-                for($i=0; $i<count($box); $i++){
-                    if( $box[$i]->lot_id == $request->lotapp_id ){
-                        $counter = $box[$i]->package_no;
-                        $wed_edi_id = $box[$i]->id;
-                        if( isset($box[$i]->unique_num) >= 1 ){
-                            $unique_num = $box[$i]->unique_num;
-                            $created_at = $box[$i]->created_at;
-                            $unique_number = date('Ymd',strtotime($created_at)).$unique_num;
-                        }
-                    }
+                $counter = $box[0]->package_no;
+                $wed_edi_id = $box[0]->id;
+                if( isset($box[0]->unique_num) >= 1 ){
+                    $unique_num = $box[0]->unique_num;
+                    $created_at = $box[0]->created_at;
+                    $unique_number = date('Ymd',strtotime($created_at)).$unique_num;
                 }
-                // old code - commented 6-26-2026 - da
-                // $counter = $box[2]->package_no;
-                // $wed_edi_id = $box[2]->id;
-                // if( isset($box[2]->unique_num) >= 1 ){
-                //     $unique_num = $box[2]->unique_num;
-                //     $created_at = $box[2]->created_at;
-                //     $unique_number = date('Ymd',strtotime($createdat)).$unique_num;
-                // }_
             }
 
+            // return $box;
 
             $_dlabel_ = Dlabel::where('po_no', $lotapp_details[0]['po_no'])->whereNull('status')->get();
             $_ids_ = [];
@@ -1225,10 +1203,6 @@ class TSPTSController extends Controller
 
     public function load_packingconfirmation_pts_table(Request $request)
     {
-        // session_start();
-        // return Auth::user()->position;
-        // return Auth::user();
-        // return 'asd';
 
     /*    $oqcvirs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
             $query->where('status', 1);
@@ -1359,13 +1333,7 @@ class TSPTSController extends Controller
                 }else{
                     // $btn = '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" data-toggle="modal" data-target="#modalPackingConfirmation" lotapp-id="'.$data->id.'"><i class="fa fa-edit"></i></button>';
                     $btn = '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" lotapp-id="'.$data->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                    // if( !in_array(Auth::user()->position, [1, 2, 5]) ){
-                    //     $btn = '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" lotapp-id="'.$data->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                    // }
                 }
-
-
-
                 // if( $data->id === 3308 ){ //ES22-002-A
                 // // if( $data->po_no === '450237958500010' ){ // FOR MAM CRIS CONCERN REGARDING YEC
                 //     $btn .= '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" lotapp-id="'.$data->id.'" title="For update"><i class="fa fa-edit"></i></button>';
@@ -1510,7 +1478,6 @@ class TSPTSController extends Controller
 
     public function load_packinginspection_pts_table(Request $request)
     {
-
         // virs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
         //     $query->where('status', 1);
         // },'prod_runcard_accessory_info','tspts_oqcvir_info' => function($query){
@@ -2545,11 +2512,7 @@ Packing Doc. #: ' . $doc_list
                         $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                            // if(in_array(Auth::user()->position, [1, 2, 5])){ // - Boss Da
-                            //         $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }else{
-                                $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }
+                            $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -2737,13 +2700,7 @@ Packing Doc. #: ' . $doc_list
                         $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                            // if(in_array(Auth::user()->position, [1, 2, 5])){ // - Boss Da
-                            //     $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }else{
-
-                                $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }
-
+                            $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -2912,11 +2869,7 @@ Packing Doc. #: ' . $doc_list
                         $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                            // if(in_array(Auth::user()->position, [1, 2, 5])){ // - Boss Da
-                            //     $result = '<button type="button"  class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }else{
-                                $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }
+                            $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -3078,11 +3031,7 @@ Packing Doc. #: ' . $doc_list
                         return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionTrfficQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                            // if(in_array(Auth::user()->position, [1, 2, 5])){ // - Boss Da
-                            //     return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }else{
-                                return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }
+                            return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -3274,14 +3223,7 @@ Packing Doc. #: ' . $doc_list
                         return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionTrfficQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-
-                            // if(in_array(Auth::user()->position, [1, 2, 5])){ // - Boss Da
-                            //     return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
-                            // }else{
-                                return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
-
-                            // }
-
+                            return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }
