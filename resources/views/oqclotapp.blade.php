@@ -150,6 +150,7 @@
                           <th>Sub Lot #</th>
                           <th>Required Lot Qty</th>
                           <th>Lot Qty Applied</th>
+                          <th>Partial Qty </th>
                           <th>WW</th>
                           <th>Lot Applied By</th>
                           <!-- <th style="background-color:#FFFF00">Prodn. Supv.</th> -->
@@ -197,8 +198,7 @@
                 <input type="hidden" class="form-control" id="hidden_require_oqc_before_emboss" name="hidden_require_oqc_before_emboss">
                 <input type="hidden" class="form-control" id="hidden_runcard_status" name="hidden_runcard_status">
                 <input type="hidden" class="form-control" id="hidden_sub_lot" name="hidden_sub_lot">
-
-
+                <input type="hidden" class="form-control" id="partial_qty" name="hidden_partial_qty">
 
                   <div class="row">
                     <div class="col">
@@ -1063,6 +1063,7 @@
             // { "data" : "sub_lot_raw" },
             { "data" : "lot_qty" },
             { "data" : "output_qty_raw" },
+            { "data" : "partial_qty" },
             { "data" : "ww" },
             { "data" : "fvo_raw" }
             // { "data" : "oqc_details.supervisor_prod_info.name" },
@@ -1231,6 +1232,8 @@
                   // console.log(data);
 
                   let data = JSONDATA['runcard_details']
+
+                  
 
                   $('#hidden_require_oqc_before_emboss').val( data[0]['require_oqc_before_emboss'] );
                   $('#hidden_runcard_status').val( data[0]['status'] );

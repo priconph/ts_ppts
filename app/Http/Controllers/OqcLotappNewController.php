@@ -1027,6 +1027,8 @@ class OqcLotappNewController extends Controller
         ->where('id',$request['id'])
         ->get();
 
+        // return $runcard_details;
+
         //- sub lot no.
         $sub_lot_no = 0;
         if($runcard_details){
@@ -1065,13 +1067,17 @@ class OqcLotappNewController extends Controller
         }
 
         $runcard_details[0]->{'sub_lot_no'} = $sub_lot_no;
-        $device = Device::where('name', $wbs_device_name)->get();
+        $device = Device::where('name', $wbs_device_name)
+        ->orderBy('id', 'desc')
+        ->get();
         $runcard_details[0]->lot_qty = $device[0]->ship_boxing;
         $result = ProductionRuncardStation::where('production_runcard_id', $runcard_details[0]->id)->where('status', 1)->get();
         $ttl = 0;
         for ($i=0; $i < count($result); $i++)
             $ttl = $ttl + $result[$i]->qty_output;
         $runcard_details[0]->output_qty = $ttl;
+
+        // return $runcard_details;
 
     	if(count($runcard_details) > 0)
     	{
