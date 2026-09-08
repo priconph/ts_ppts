@@ -55,7 +55,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Casemark Printing</h1>
+          <h1>F3 Casemark Printing</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -76,7 +76,7 @@
 
             <!-- Start Page Content -->
                 <!-- <iframe src="http://rapid/pats_ts_casemark/" height="650" width="1700"></iframe> -->
-                <iframe style="border: none;" src="http://rapid/pats_ts_casemark/" no-border height="850" width="1900"></iframe>
+                <iframe style="border: none;" src="http://rapid/pats_ts_casemark_f3/" no-border height="850" width="1900"></iframe>
             <!-- !-- End Page Content -->
 
       </div>

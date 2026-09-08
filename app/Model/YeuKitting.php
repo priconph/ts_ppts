@@ -20,9 +20,9 @@ class YeuKitting extends Model
     // 	return $this->hasMany(MaterialIssuanceDetails::class, 'issue_no', 'issuance_no');
     // }
 
-    // public function device_info(){
-    // 	return $this->hasOne(Device::class, 'barcode', 'device_code')->where('status', 1);
-    // }
+    public function device_info(){
+    	return $this->hasOne(Device::class, 'name', 'product_name')->where('status', 1);
+    }
 
     // public function material_issuance_info(){
     // 	return $this->hasOne(MaterialIssuance::class, 'tbl_wbs_material_kitting_id', 'id');

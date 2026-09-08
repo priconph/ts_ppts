@@ -27,10 +27,14 @@ class WBSMaterialKittingController extends Controller
     	->whereNotNull('yec_po')
     	->get();
 
+        // $po = $request->po_no;
+
 
         // $kitting_details = MaterialIssuanceDetails::select('id', 'item', 'item_desc', 'usage', 'issued_qty')->distinct('item')
-        // ->where('po', $po_number)
+        // ->where('po', $po)
         // ->get();
+
+        // return $kitting_details;
 
         // return gettype($yeu_kitting_details[0]->yec_po);
 
@@ -38,16 +42,31 @@ class WBSMaterialKittingController extends Controller
 
         // if(isset($yeu_kitting_details)){}
 
+        /*
+        select distinct `id`,
+        `item`,
+        `item_desc`,
+        `usage`,
+        `issued_qty`from `tbl_wbs_material_kitting_details`where `po`in("450259632100010",
+        "450259632200010")
+
+        SELECT *  FROM `tbl_wbs_material_kitting` WHERE `po_no` IN ('450259632100010','450259632200010')
+        */
         if(count($yeu_kitting_details) > 0){ // added 11222024 BiniManoy
             // return 'if';
-            $po_number = $yeu_kitting_details[1]->yec_po;
+            $collectYecPo = collect($yeu_kitting_details)->map(function($item){
+                return $item->yec_po;
+            });
+            // $po_number = $yeu_kitting_details[1]->yec_po;
             $kitting_details = MaterialIssuanceDetails::select('id', 'item', 'item_desc', 'usage', 'issued_qty')->distinct('item')
-            ->where('po', $po_number)
+            ->whereIn('po', $collectYecPo)
             ->get();
+    	    return response()->json(['kitting_details' => $kitting_details,'yeu_kitting_details'=>$yeu_kitting_details]);
         }else{
             // return 'else';
             $kitting_details = MaterialIssuanceDetails::select('id', 'item', 'item_desc', 'usage', 'issued_qty')->distinct('item')
-            ->where('po', $request->po_no)
+            // ->where('po','like','%'. $request->po_no.'%')
+            ->where('po',$request->po_no)
             ->get();
         }
 

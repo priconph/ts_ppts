@@ -38,7 +38,7 @@
             </a>
           </li> --}}
            <li class="nav-item">
-            <a href="{{ route('dlabelprinting_rev6') }}" class="nav-link">
+            <a href="{{ route('dlabelprinting_rev6_f3') }}" class="nav-link">
               <p>- WEB EDI</p>
             </a>
           </li>

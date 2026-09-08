@@ -50,6 +50,7 @@ function GetMaterialKittingListByPoNo(cboElement, poNo){
             let issuedQty = '';
 
             if(JsonObject['kitting_details'].length > 0){
+
                 // result = '<option value="">N/A</option>';
                 for(let index = 0; index < JsonObject['kitting_details'].length; index++){
                     result += '<option data-code="' + JsonObject['kitting_details'][index].item + '" item-desc="' + JsonObject['kitting_details'][index].item_desc + '" usage="' + JsonObject['kitting_details'][index].usage + '" issued-qty="' + JsonObject['kitting_details'][index].issued_qty + '" value="' + JsonObject['kitting_details'][index].item + '--' + JsonObject['kitting_details'][index].item_desc + '--' + JsonObject['kitting_details'][index].id + '" ' + '>' + JsonObject['kitting_details'][index].item_desc + '</option>';
@@ -58,6 +59,7 @@ function GetMaterialKittingListByPoNo(cboElement, poNo){
                         issuedQty = JsonObject['kitting_details'][index].issued_qty;
                     }
                 }
+
                 for(let index = 0; index < JsonObject['yeu_kitting_details'].length; index++){
                     result += '<option data-code="' + JsonObject['yeu_kitting_details'][index].item_code + '" item-desc="' + JsonObject['yeu_kitting_details'][index].item_name + '" usage="' + JsonObject['yeu_kitting_details'][index].usg + '" issued-qty="' + JsonObject['yeu_kitting_details'][index].qty + '" value="' + JsonObject['yeu_kitting_details'][index].item_code + '--' + JsonObject['yeu_kitting_details'][index].item_name + '--' + JsonObject['yeu_kitting_details'][index].id + '" ' + '>' + JsonObject['yeu_kitting_details'][index].item_name + '</option>';
                     if(index <= 0){
@@ -65,7 +67,9 @@ function GetMaterialKittingListByPoNo(cboElement, poNo){
                         issuedQty = JsonObject['yeu_kitting_details'][index].qty;
                     }
                 }
-            }else if(JsonObject['kitting_details'].length === 0 && JsonObject['yeu_kitting_details'].length > 0){
+
+            }
+            else if(JsonObject['kitting_details'].length === 0 && JsonObject['yeu_kitting_details'].length > 0){
                 console.log('JsonObject',JsonObject['yeu_kitting_details']);
 
                 for(let index = 0; index < JsonObject['yeu_kitting_details'].length; index++){
@@ -75,7 +79,8 @@ function GetMaterialKittingListByPoNo(cboElement, poNo){
                         issuedQty = JsonObject['yeu_kitting_details'][index].qty;
                     }
                 }
-            }else{
+            }
+            else{
                 result = '<option value=""> -- No record found -- </option>';
             }
 

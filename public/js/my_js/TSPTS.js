@@ -39,8 +39,6 @@ function TSPTSViewLotAppDetails(lotapp_id)
         		let device_name = JsonObject['lotapp_details'][0].device_name;
                 let unique_num = JsonObject['unique_num']; // 04072025 by Nessa
 
-                console.log('unique_num', unique_num)
-
                 // alert('asd');
 
         		$('#add_po_no').val(po_num);
@@ -109,7 +107,7 @@ function TSPTSViewLotAppDetails(lotapp_id)
                     }
 
                     let _qtt = list[i]['qty'] + ""
-
+                    
                     if( list[i]['box_no'].split('-').length == 2 )
                         _qtt = list[i]['gross_weight'].split('(')[1].split('/')[0] + ""
 
@@ -164,7 +162,6 @@ function TSPTSViewLotAppDetails(lotapp_id)
                 html_4 +=     "<td style='padding: 5px; width: 15%;' id='tray_check_list_id_4'>" + _status + "</td>"
                 html_4 += "</tr>"
 
-                console.log(JsonObject)
 
                 _style = ""
                 _status = "pending"
