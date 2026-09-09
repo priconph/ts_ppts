@@ -1388,6 +1388,7 @@ class OQCLotAppController extends Controller
     public function get_po_details(Request $request){
 
         // return 'asd';
+        return 'qweqwe';
 
         $subPO = substr($request->po, 0, 15); // added by migs and jd 11-06-2023
         $po_details = ProductionRuncard::with([
