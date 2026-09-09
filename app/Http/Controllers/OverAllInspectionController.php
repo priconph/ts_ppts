@@ -120,7 +120,7 @@ class OverAllInspectionController extends Controller
 	}
 
     public function get_oqc_lot_app_data_for_overAllInspect(Request $request){
-            $oqc_inspections = ProductionRuncard::with([
+        $oqc_inspections = ProductionRuncard::with([
             'oqc_details' => function($query){
                 $query->orderBy('submission', 'DESC');},
             'oqc_details.user_details',

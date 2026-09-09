@@ -1860,6 +1860,7 @@
 
     //- Print Barcode
     $("#btn_print_barcode").click(function(){
+        // console.log('btn_print_barcode');
       popup = window.open();
         let content = '';
 
@@ -1867,21 +1868,66 @@
         content += '<head>';
         content += '<title></title>';
         content += '<style type="text/css">';
+
+        // content += '@page { margin: 0px; padding: 0px; }';
         content += '@media print { .pagebreak { page-break-before: always; } }';
+
+
         content += '.rotated {';
         content += 'width: 290px;';
+        // content += 'position: relative;';
+        // content += 'left: 5px;';
+        // content += 'border: 5px solid red;';
+        // // content += 'margin-top: 100px;';
+        // content += 'height: 120px;';
+
         content += '}';
+
+        // content += '.s {';
+        // content += 'border-left: 1px dashed black;';
+        // content += 'height: 15px;';
+        // content += '}';
+
+        // content += '.s1 {';
+        // content += 'border-left: 1px dashed black;';
+        // content += 'height: 65px;';
+        // content += '}';
+
+        // content += '.s2 {';
+        // content += 'border-left: 1px dashed black;';
+        // content += 'height: 66px;';
+        // content += '}';
+
+        // content += '.s3 {';
+        // content += 'border-left: 1px dashed black;';
+        // content += 'height: 40px;';
+        // content += '}';
+
         content += '</style>';
         content += '</head>';
         content += '<body>';
 
-        //- 1st sticker QR
-        for (var i = 0; i < img_barcode_PO_text_hidden.length; i++) {
 
+        //- 1st sticker QR
+
+
+        // content += '<div class="rotated">';
+        // content += '<tr>';
+        //     content += '<td style="text-align: center;">';
+        //     content += '<img src="' + $('#img_barcode_PO').attr('src') + '" style="min-width: 55px; max-width: 55px;">';
+        //     content += '</td>';
+        //     content += '<td style="font-size: 9px;">' + $('#img_barcode_PO_text_hidden').html() + '</td>';
+        // content += '</tr>';
+        // content += '</div>';
+
+        for (var i = 0; i < img_barcode_PO_text_hidden.length; i++) {
+          // content += '<div class="rotated">';
+          // content += '<table style="margin-left: '  + (i*2.3) + 'px;">';
+        //   content += '<table style="margin-left: -10px; margin-top: 10px;>'; // 04032025 by Nessa
           content += '<table style="margin-left: -10px;>';
+          // content += '<table style="float: right;">';
           content += '<tr style="width: 290px;">';
               content += '<td style="vertical-align: bottom;">';
-            //   content += '<img src="' + img_barcode_PO_text_hidden[i]['img'] + '" style="min-width: 110px; max-width: 110px;">';//- With Ribbon 1.19 top - Printer Pref Paper Size 4.094
               content += '<img src="' + img_barcode_PO_text_hidden[i]['img'] + '" style="min-width: 100px; max-width: 100px;">';
               content += '</td>';
               content += '<td style="font-size: 8.5px; font-family: Calibri;">' + img_barcode_PO_text_hidden[i]['text'] + '</td>';
@@ -1890,14 +1936,159 @@
           content += '<br>';
           if( i < img_barcode_PO_text_hidden.length-1 )
             content += '<div class="pagebreak"> </div>';
+          // content += '</div>';
         }
+
+
+        // for (var i = 0; i < img_barcode_PO_text_hidden.length; i++) {
+        //   // content += '<div class="rotated">';
+        //   content += '<div style="margin-left: '  + (i*1.7) + 'px;">';
+        //   content +=    '<div style="float: left;">';
+        //   content +=      '<img src="' + img_barcode_PO_text_hidden[i]['img'] + '" style="min-width: 55px; max-width: 55px; margin-top: 15px;">';
+        //   content +=    '</div>';
+        //   content +=    '<div style="font-size: 9px; font-family: Arial; float: left;">' + img_barcode_PO_text_hidden[i]['text'] + '</div>';
+        //   content += '</div>';
+        //   content += '<br>';
+        //   if( i < img_barcode_PO_text_hidden.length-1 )
+        //     content += '<div class="pagebreak"> </div>';
+        //   // content += '</div>';
+        // }
+
+        //- 1st QR details
+        // content += '<tr>';
+        //     content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //     content += '<label style="font-weight: bold;">' + lbl_po_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_device_name + '</label>';
+        //     content += '</td>';
+
+        //     content += '<td>';
+        //     content += '<div class="s1"></div>';
+        //     content += '</td>';
+
+        //     content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //     content += '<label>' + lbl_device_name + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_po_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label style="font-weight: bold;">' + lbl_lot_batch_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_reel_lot_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_lot_qty + "/" + new_lot_qty1 + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_sticker_page_no + '</label>';
+        //     content += '</td>';
+        // content += '</tr>';
+
+        // content += '<div class="rotated">';
+        // //- 2nd sticker
+        // content += '<tr>';
+        //     content += '<td style="width: 50%; text-align: center;">';
+        //     content += '<img src="' + img_barcode_PO + '" style="min-width: 45px; max-width: 45px;">';
+        //     content += '</td>';
+
+        //     content += '<td>';
+        //     content += '<div class="s"></div>';
+        //     content += '</td>';
+
+        //     content += '<td style="width: 50%; text-align: center;">';
+        //     content += '<img src="' + img_barcode_lotno + '" style="min-width: 43px; max-width: 43px;">';
+        //     content += '</td>';
+        // content += '</tr>';
+
+        // // //- lot_batch# 2
+        // content += '<tr>';
+        //     content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //     content += '<label style="font-weight: bold;">' + lbl_po_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_device_name + '</label>';
+        //     content += '</td>';
+
+        //     content += '<td>';
+        //     content += '<div class="s2"></div>';
+        //     content += '</td>';
+
+        //     content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //     content += '<label>' + lbl_device_name + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_po_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label style="font-weight: bold;">' + lbl_lot_batch_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_reel_lot_no + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_lot_qty + "/" + new_lot_qty2 + '</label>';
+        //     content += '<br>';
+        //     content += '<label>' + lbl_sticker_page_no2 + '</label>';
+        //     content += '</td>';
+        // content += '</tr>';
+        // content += '</div>';
+
+        // //- 3rd Drawing
+        // content += '<div class="rotated">';
+        //     content += '<table>';
+        //     content += '<tr>';
+        //         content += '<td style="width: 30%; text-align: center;">';
+        //         content += '<img src="' + img_A_drawing + '" style="min-width: 43px; max-width: 43px;">';
+        //         content += '</td>';
+
+        //         content += '<td>';
+        //         content += '<div class="s"></div>';
+        //         content += '</td>';
+
+        //         content += '<td style="width: 30%; text-align: center;">';
+        //         content += '<img src="' + img_IS_drawing + '" style="min-width: 43px; max-width: 43px;">';
+        //         content += '</td>';
+
+        //         content += '<td>';
+        //         content += '<div class="s"></div>';
+        //         content += '</td>';
+
+        //         content += '<td style="width: 30%; text-align: center;">';
+        //         content += '<img src="' + img_R_drawing + '" style="min-width: 43px; max-width: 43px;">';
+        //         content += '</td>';
+        //     content += '</tr>';
+
+        //     content += '<tr>';
+        //         content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //         content += '<label>' + lbl_device_name + '</label>';
+        //         content += '<br>';
+        //         content += '<label style="font-weight: bold;">' + lbl_adrawing + '</label>';
+        //         content += '</td>';
+
+        //         content += '<td>';
+        //         content += '<div class="s3"></div>';
+        //         content += '</td>';
+
+        //         content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //         content += '<label>' + lbl_device_name + '</label>';
+        //         content += '<br>';
+        //         content += '<label style="font-weight: bold;">' + lbl_isdrawing + '</label>';
+        //         content += '</td>';
+
+        //         content += '<td>';
+        //         content += '<div class="s3"></div>';
+        //         content += '</td>';
+
+        //         content += '<td style="font-family: Arial; font-size: 5px; text-align: center; vertical-align:top;">';
+        //         content += '<label>' + lbl_device_name + '</label>';
+        //         content += '<br>';
+        //         content += '<label style="font-weight: bold;">' + lbl_rdrawing + '</label>';
+        //         content += '</td>';
+        //     content += '</tr>';
+        //     content += '</table>';
+        // content += '</div>';
+
+
+
         content += '</body>';
         content += '</html>';
         popup.document.write(content);
 
         popup.focus(); //required for IE
         popup.print();
-        popup.close();
+        // popup.close();
     });
 
     //- Search PO

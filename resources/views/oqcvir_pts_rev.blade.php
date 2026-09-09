@@ -2039,6 +2039,7 @@
             $('#id_po_qty').val('');
 
             let oqc_lotapp_po_no = JSON.parse($('#txt_search_po_number').val()).oqc_lotapp_po_no;
+            
             console.log(oqc_lotapp_po_no);
             if(oqc_lotapp_po_no == undefined){
                 alert('Invalid QR Code, Please try again !')
@@ -2563,7 +2564,7 @@
               // console.log('JsonObject', JsonObject)
               // console.log('http://192.168.3.17/pmi-subsystem/oqcinspection?' + encodeURI(
               // window.open('http://rapidx/ts_ppts/wbs_getLotDetails_try_url?' + encodeURI(
-              window.open('http://192.168.3.246/pmi-subsystem/oqcinspection?' + encodeURI(
+              window.open('http://192.168.180.11/pmi-subsystem/oqcinspection?' + encodeURI(
                 'po_no=' + JsonObject['po_no'] +
                 '&po_qty=' + JsonObject['po_qty'] +
                 '&lot_no=' + JsonObject['lot_no'] +

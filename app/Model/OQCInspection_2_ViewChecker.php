@@ -14,7 +14,7 @@ use App\User;
 
 class OQCInspection_2_ViewChecker extends Model
 {
-    protected $table = 'oqc_inspection_view_scan_checker';
+    protected $table = 'oqc_inspection_view_scan_checker'; //2025-331 53034
     protected $connection = 'mysql';
 
     public $timestamps = false;

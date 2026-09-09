@@ -107,31 +107,19 @@ class TSPTSController extends Controller
     {
         // return 'asd';
         // return $request->po_num;
-        $subPO = substr($request->po_num, 0, 15) ?? ''; // added by migs and jd 11-06-2023
+        $subPO = substr($request->po_num, 0, 15); // added by migs and jd 11-06-2023
         $oqcvirs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
             $query->where('status', 1);
         },'prod_runcard_accessory_info','tspts_oqcvir_info' => function($query){
             $query->orderBy('created_at','desc');
-        },'tspts_oqcvir_info.inspector_info','production_runcards_device'])
+        },'tspts_oqcvir_info.inspector_info'])
         ->where('po_no', $subPO)
-        // ->whereNull('deleted_at') {"oqc_lotapp_po_no":"450260268600010","oqc_lotapp_device":"NP383-036-309","oqc_lotapp_lot_batch_no":"02686 LOT-001","oqc_lotapp_serial_no":"33","oqc_lotapp_qtt_tray":33,"oqc_lotapp_lot_sticker_cnt":"1\/1"}
-        // ->where('status','>=',3)
+        ->whereNull('deleted_at')
         ->where('status',4)
         ->get();
 
-        if($subPO != ""){
-            $oqcvirs_status3 = ProductionRuncard::
-            where('po_no', $subPO)
-            ->where('status','>=',3)
-            ->get();
-             $withOrWithoutOverall = $oqcvirs_status3[0]->production_runcards_device->process ?? '';
-            if($withOrWithoutOverall === 0){ //EDIT if the Device Matrix is Without Overall
-                ProductionRuncard::
-                where('po_no', $subPO)
-                ->where('status', 3)
-                ->update(['status'=>4]);
-            }
-        }
+        // return $oqcvirs;
+
 
 
         for ($i=0; $i < count($oqcvirs); $i++) {
@@ -832,7 +820,6 @@ class TSPTSController extends Controller
 
     public function tspts_view_lotapp_details(Request $request)
     { //WORKING FUNCTION
-        // return 'dsada';
         $lotapp_details = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query) {
                 $query->where('status', 1);
             },'tspts_oqcvir_info','tspts_packingconfirmation_info'])->where('id', $request->lotapp_id)->get();
@@ -853,7 +840,6 @@ class TSPTSController extends Controller
             }
 
           $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
-        //   return $oqcLotApp;
             // return $oqcLotApp;
             $result = ProductionRuncardStation::where('production_runcard_id', $request->lotapp_id)->where('status', 1)->get();
             $ttl = 0;
@@ -898,6 +884,7 @@ class TSPTSController extends Controller
             $lot_number = explode('-', $oqcLotApp[0]->lot_batch_no);
             $lot_number = (int)($lot_number[count($lot_number)-1]);
             // return $lot_number;
+
             /**
              * Separate the integer($lot_number) and only use ceil() function to decimal/float values as multiplier
              * Revised as of 06-20-2024 -JD
@@ -907,7 +894,7 @@ class TSPTSController extends Controller
 
             // return $lot_start_counter;
 
-            if( $prd_runcards[0]->po_qty <= 99 ){
+            if( $prd_runcards[0]->po_qty <= 99 || $prd_runcards[0]->po_no = '450257796000010'){
                 // return 'asd';
                 // $sticker_cnt = 1;
                 $lot_start_counter = 0;
@@ -996,11 +983,9 @@ class TSPTSController extends Controller
             ->whereNull('status')
             ->orderBy('id','DESC') //Get the latest PO / DESC order
             ->get();
-
-            // return $dlabel;
             // return $dlabel[0]['id']; //The PO Exist & will get the ASC order ID
 
-        $box = DlabelBoxes::where('lot_no', $oqcLotApp[0]->lot_batch_no)
+            $box = DlabelBoxes::where('lot_no', $oqcLotApp[0]->lot_batch_no)
             ->where('d_label_id', $dlabel[0]->id ?? '') // Check id is exists
             ->orWhere('lot_id', $request->lotapp_id ?? '')
             // ->where('d_label_id', $dlabel[0]->id) // 05202025 by Nessa
@@ -1008,31 +993,19 @@ class TSPTSController extends Controller
             ->get();
 
 
+            // return $box;
 
             if( count($box) >= 1 ){
-
-                //new code with for loop 6-26-2026 - da
-                for($i=0; $i<count($box); $i++){
-                    if( $box[$i]->lot_id == $request->lotapp_id ){
-                        $counter = $box[$i]->package_no;
-                        $wed_edi_id = $box[$i]->id;
-                        if( isset($box[$i]->unique_num) >= 1 ){
-                            $unique_num = $box[$i]->unique_num;
-                            $created_at = $box[$i]->created_at;
-                            $unique_number = date('Ymd',strtotime($created_at)).$unique_num;
-                        }
-                    }
+                $counter = $box[0]->package_no;
+                $wed_edi_id = $box[0]->id;
+                if( isset($box[0]->unique_num) >= 1 ){
+                    $unique_num = $box[0]->unique_num;
+                    $created_at = $box[0]->created_at;
+                    $unique_number = date('Ymd',strtotime($created_at)).$unique_num;
                 }
-                // old code - commented 6-26-2026 - da
-                // $counter = $box[2]->package_no;
-                // $wed_edi_id = $box[2]->id;
-                // if( isset($box[2]->unique_num) >= 1 ){
-                //     $unique_num = $box[2]->unique_num;
-                //     $created_at = $box[2]->created_at;
-                //     $unique_number = date('Ymd',strtotime($createdat)).$unique_num;
-                // }_
             }
 
+            // return $box;
 
             $_dlabel_ = Dlabel::where('po_no', $lotapp_details[0]['po_no'])->whereNull('status')->get();
             $_ids_ = [];
@@ -1229,10 +1202,6 @@ class TSPTSController extends Controller
 
     public function load_packingconfirmation_pts_table(Request $request)
     {
-        // session_start();
-        // return Auth::user()->position;
-        // return Auth::user();
-        // return 'asd';
 
     /*    $oqcvirs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
             $query->where('status', 1);
@@ -1363,13 +1332,7 @@ class TSPTSController extends Controller
                 }else{
                     // $btn = '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" data-toggle="modal" data-target="#modalPackingConfirmation" lotapp-id="'.$data->id.'"><i class="fa fa-edit"></i></button>';
                     $btn = '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" lotapp-id="'.$data->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                    // if( !in_array(Auth::user()->position, [1, 2, 5]) ){
-                    //     $btn = '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" lotapp-id="'.$data->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-                    // }
                 }
-
-
-
                 // if( $data->id === 3308 ){ //ES22-002-A
                 // // if( $data->po_no === '450237958500010' ){ // FOR MAM CRIS CONCERN REGARDING YEC
                 //     $btn .= '<button type="button" class="btn btn-sm btn-info btn-packing-confirmation" lotapp-id="'.$data->id.'" title="For update"><i class="fa fa-edit"></i></button>';
@@ -1537,7 +1500,6 @@ class TSPTSController extends Controller
 
     public function load_packinginspection_pts_table(Request $request)
     {
-
         // virs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
         //     $query->where('status', 1);
         // },'prod_runcard_accessory_info','tspts_oqcvir_info' => function($query){
@@ -2353,32 +2315,17 @@ Packing Doc. #: ' . $doc_list
 
             $query->where('result', 1);
 
-        },
-        'tspts_packingconfirmation_info',
-        'tspts_packinginspection_info',
-        'tspts_supervisorvalidation_info',
-        'tspts_finalpackinginspection_info',
-        'tspts_finalpackinginspection_info.inspector_info',
-        'oqc_details'
-        ])
-        ->where('po_no', $request->po_num)
-        ->orderBy('id','desc')
-        ->where('status',4)
-
-        ->get();
+        }, 'tspts_packingconfirmation_info', 'tspts_packinginspection_info', 'tspts_supervisorvalidation_info', 'tspts_finalpackinginspection_info','tspts_finalpackinginspection_info.inspector_info','oqc_details'])->where('po_no', $request->po_num)->where('status',4)->get();
 
         // return $data;
 
         $new = [];
+        $new = [];
         for ($i=0; $i < count($data); $i++) {
-            // $oqc_inspec = OQCInspection_2::where('prod_runcard_id', $data[$i]->id)->orderBy('id', 'desc')->get();
             $oqc_inspec = OQCInspection_2::where('prod_runcard_id', $data[$i]->id)->get();
-            // return $oqc_inspec;
             if( count($oqc_inspec)>0 ){
-                // $inspect = TSPTSPackingConfirmation::where('lotapp_id', $data[$i]->id)->orderBy('id', 'desc')->get();
                 $inspect = TSPTSPackingConfirmation::where('lotapp_id', $data[$i]->id)->get();
                 if( count($inspect)>0 ){
-                    // $prelim = TSPTSPreliminaryPackingInspection::where('lotapp_id', $data[$i]->id)->orderBy('id', 'desc')->get();
                     $prelim = TSPTSPreliminaryPackingInspection::where('lotapp_id', $data[$i]->id)->get();
                     if( count($prelim)>0 ){
                         $supervisor = TSPTSSupervisorValidation::where('lotapp_id', $data[$i]->id)->get();
@@ -2415,9 +2362,9 @@ Packing Doc. #: ' . $doc_list
                             $result = '<button type="button" 1 class="btn btn-sm btn-info btn-final-inspection" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             if( count( TSPTSFinalPackingInspection::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                                    $result = '<button type="button"  class="btn btn-sm btn-info btn-final-inspection d-none" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
+                                $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                             }else{
-                                $result = '<button type="button"  class="btn btn-sm btn-info btn-final-inspection" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
+                                $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                             }
                         }
                     }else{
@@ -2436,7 +2383,17 @@ Packing Doc. #: ' . $doc_list
                 // return '2';
                 // $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
 
-                if(in_array(Auth::user()->position, [1, 2, 5]) || in_array(Auth::user()->user_level_id, [1,2]) ){
+                if( !in_array(Auth::user()->position, [1, 2]) || !in_array(Auth::user()->user_level_id, [2]) ){
+                    if( $packing->id_first_data == 0 ){
+                        $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
+                    }else{
+                        if( count( TSPTSFinalPackingInspection::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
+                            $result .= ' <button type="button" disabled class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
+                        }else{
+                            $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
+                        }
+                    }
+                }else{
                     $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
 
                 }else{
@@ -2452,13 +2409,12 @@ Packing Doc. #: ' . $doc_list
                 }
             }
 
-            // if( $packing->id == 1873 )
-            //     $result .= '<button type="button" class="btn btn-sm btn-info btn-final-inspection" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-            // if( in_array(Auth::user()->position, [1, 2]) || in_array(Auth::user()->user_level_id, [2]) )
-            //     $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
+            if( $packing->id == 1873 )
+                $result .= '<button type="button" class="btn btn-sm btn-info btn-final-inspection" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
+            if( in_array(Auth::user()->position, [1, 2]) || in_array(Auth::user()->user_level_id, [2]) )
+                $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
 
-            // $result .= ' <button type="button" class="btn btn-sm btn-danger btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
-
+            $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
             return $result;
         })
         ->addColumn('device_code', function($packing){
@@ -2538,26 +2494,15 @@ Packing Doc. #: ' . $doc_list
         //     return $result;
         // })
 
-        ->addColumn('ww', function($packing){ // old ww
-            $result = $packing->oqc_details->ww; // commented 04/01/2026 - Relationship on database is one to one, need one to many.
+
+        ->addColumn('ww', function($packing){
+
+            $result = $packing->oqc_details->ww;
+
             return $result;
-
-            // if ($packing->oqc_details && count($packing->oqc_details) > 0) {
-
-            //     if (count($packing->oqc_details) > 1) {
-            //         // get LAST item
-            //         $lastIndex = count($packing->oqc_details) - 1;
-            //         return $packing->oqc_details[$lastIndex]->ww;
-            //     } else {
-            //         // only 1 item
-            //         return $packing->oqc_details[0]->ww;
-            //     }
-            // }
-
-
         })
 
-        ->rawColumns(['action', 'ww'])
+        ->rawColumns(['action'])
         ->make(true);
     }
 
@@ -2620,8 +2565,7 @@ Packing Doc. #: ' . $doc_list
                         $result = '<button type="button" class="btn btn-sm btn-warning btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                                 $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
-
+                            $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -2714,22 +2658,13 @@ Packing Doc. #: ' . $doc_list
         })
 
         ->addColumn('ww', function($packing){
-            return $result = $packing->oqc_details->ww;
 
-            //    if ($packing->oqc_details && count($packing->oqc_details) > 0) {
+            $result = $packing->oqc_details->ww;
 
-            //         if (count($packing->oqc_details) > 1) {
-            //             // get LAST item
-            //             $lastIndex = count($packing->oqc_details) - 1;
-            //             return $packing->oqc_details[$lastIndex]->ww;
-            //         } else {
-            //             // only 1 item
-            //             return $packing->oqc_details[0]->ww;
-            //         }
-            //     }
+            return $result;
         })
 
-        ->rawColumns(['action', 'ww'])
+        ->rawColumns(['action'])
         ->make(true);
     }
 
@@ -2808,7 +2743,7 @@ Packing Doc. #: ' . $doc_list
                         $result = '<button type="button" class="btn btn-sm btn-warning btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                                $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
+                            $result = '<button type="button" disabled class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             $result = '<button type="button" class="btn btn-sm btn-info btn-final-inspection-qc" lotapp-id="'.$packing->id.'" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -2900,19 +2835,10 @@ Packing Doc. #: ' . $doc_list
         })
 
         ->addColumn('ww', function($packing){
-            $result = $packing->oqc_details->ww;
-            return $result;
-            // if ($packing->oqc_details && count($packing->oqc_details) > 0) {
 
-            //     if (count($packing->oqc_details) > 1) {
-            //         // get LAST item
-            //         $lastIndex = count($packing->oqc_details) - 1;
-            //         return $packing->oqc_details[$lastIndex]->ww;
-            //     } else {
-            //         // only 1 item
-            //         return $packing->oqc_details[0]->ww;
-            //     }
-            // }
+            $result = $packing->oqc_details->ww;
+
+            return $result;
         })
 
         ->rawColumns(['action'])
@@ -3133,7 +3059,7 @@ Packing Doc. #: ' . $doc_list
                         return '<button type="button" class="btn btn-sm btn-warning btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionTrfficQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                                return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
+                            return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -3241,19 +3167,10 @@ Packing Doc. #: ' . $doc_list
         // })
 
         ->addColumn('ww', function($packing){
-            $result = $packing->oqc_details->ww;
-            return $result;
-        //    if ($packing->oqc_details && count($packing->oqc_details) > 0) {
 
-        //         if (count($packing->oqc_details) > 1) {
-        //             // get LAST item
-        //             $lastIndex = count($packing->oqc_details) - 1;
-        //             return $packing->oqc_details[$lastIndex]->ww;
-        //         } else {
-        //             // only 1 item
-        //             return $packing->oqc_details[0]->ww;
-        //         }
-        //     }
+            $result = $packing->oqc_details->ww;
+
+            return $result;
         })
 
         ->rawColumns(['action'])
@@ -3323,8 +3240,7 @@ Packing Doc. #: ' . $doc_list
                         return '<button type="button" class="btn btn-sm btn-warning btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                     }else{
                         if( count( TSPTSFinalPackingInspectionTrfficQC::where('lotapp_id', $packing->id_first_data)->get() ) == 0 ){
-                                return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
-
+                            return '<button type="button" disabled class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }else{
                             return '<button type="button" class="btn btn-sm btn-info btn_final_inspection_traffic" lotapp-id="'.$packing->id.'"  data-toggle="modal" data-target="#modalFinalPackingInspection" title="For update"><i class="fa fa-edit"></i></button>';
                         }
@@ -4886,12 +4802,15 @@ Packing Doc. #: ' . $doc_list
     public function load_runcards_tspts_table(Request $request)
     {
 
+    // return $request->lotapp_id;
+
       $runcards = ProductionRuncardStation::with(['ct_area_info', 'terminal_area_info','tspts_oqcvir_info' => function($query){
 
             $query->orderBy('created_at','desc');
         //deleted_at //lot
        }, 'tspts_oqcvir_info.inspector_info'])->where('production_runcard_id', $request->lotapp_id)->where('status',1)->get();
 
+    //    return $runcards;
     //   return $oqc = explode("-", $runcards[0]->tspts_oqcvir_info[0]->oqc_stamp);
     //   return $oqc = $runcards[0]->tspts_oqcvir_info[0];
        $array_batch = [];
@@ -4907,242 +4826,12 @@ Packing Doc. #: ' . $doc_list
         // return $runcards[$i]->tspts_oqcvir_info[0]->employee_id;
             // if($runcards[$i]->tspts_oqcvir_info[0]->inspector_info_2 == null)
             if( count($runcards[$i]->tspts_oqcvir_info)>0 )
+                // return 'qwe';
                 $runcards[$i]->tspts_oqcvir_info[0]->inspector_info_2 = User::where('employee_id', $runcards[$i]->tspts_oqcvir_info[0]->employee_id)->get();
        }
 
        return DataTables::of($runcards)
-    //    ->addColumn('action_batch', function($runcard) use ($array_batch){
 
-
-    //      $sticker = "FOR GENERATION";
-    //         $disabled = "disabled";
-
-    //         if(count($runcard->tspts_oqcvir_info) > 0)
-    //         {
-    //             if($runcard->tspts_oqcvir_info[0]->result == 1)
-    //             {
-    //                 if($runcard->tspts_oqcvir_info[0]->inspector_info_2[0] != null)
-    //                 {
-
-    //                     if($runcard->tspts_oqcvir_info[0]->oqc_stamp != null)
-    //                     {
-
-    //                         //year and month of created at
-    //                         $yearmonth = $runcard->created_at->format('ym');
-
-    //                         //ct area and terminal area
-    //                         $ct_area = $runcard->ct_area_info;
-    //                         $terminal_area = $runcard->terminal_area_info;
-
-    //                         //generated fvi no
-    //                         $fvi_no = '';
-
-    //                         if($ct_area != null && $terminal_area != null)
-    //                         {
-
-    //                             if($ct_area->fvi_no != null && $terminal_area->fvi_no != null)
-    //                             {
-
-    //                                 if($ct_area->fvi_no < 100 && $terminal_area->fvi_no < 100)
-    //                                 {
-
-    //                                     if($ct_area->fvi_no != $terminal_area->fvi_no)
-    //                                     {
-
-    //                                         return $fvi_no = $terminal_area->fvi_no . $ct_area->fvi_no;
-
-
-    //                                          $disabled = "";
-    //                                     }
-    //                                     else
-    //                                     {
-    //                                         $fvi_no = str_pad($ct_area->fvi_no, 4, "0", STR_PAD_LEFT);
-
-    //                                         $disabled = "";
-    //                                     }
-    //                                 }
-    //                                 else
-    //                                 {
-
-    //                                     if($ct_area->fvi_no != null)
-    //                                     {
-    //                                         $fvi_no = str_pad($ct_area->fvi_no, 4, "0", STR_PAD_LEFT);
-
-    //                                          $disabled = "";
-    //                                     }
-    //                                     else
-    //                                     {
-    //                                         $sticker = "NO REGISTERED FVI NUMBER";
-    //                                     }
-    //                                 }
-    //                             }
-    //                             else
-    //                             {
-    //                                 $sticker = "NO REGISTERED FVI NUMBER";
-    //                             }
-    //                         }
-    //                         else
-    //                         {
-
-    //                             if($ct_area->fvi_no != null)
-    //                             {
-    //                                 $fvi_no = str_pad($ct_area->fvi_no, 4, "0", STR_PAD_LEFT);
-
-    //                                  $disabled = "";
-    //                             }
-    //                             else
-    //                             {
-    //                                $sticker = "NO REGISTERED FVI NUMBER";
-    //                             }
-    //                         }
-
-    //                         //oqc inspector stamp
-    //                         $oqc = explode("-", $runcard->tspts_oqcvir_info[0]->oqc_stamp)[1];
-
-    //                         //sticker to be generated
-    //                         $sticker = $yearmonth . $fvi_no . "-" . $oqc;
-    //                     }
-    //                     else
-    //                     {
-    //                          $sticker = "OQC STAMP NOT YET REGISTERED";
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     $sticker = "INSPECTOR DETAILS NOT YET ADDED";
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 $sticker = "NG RESULT";
-    //             }
-    //         }
-    //         else
-    //         {
-    //             $sticker = "FOR GENERATION";
-    //         }
-
-    //     $result = '<input type="checkbox" class="form-control-sm btn-print-packing-code-batch" runcard-id="'.$runcard->id.'" packing-code="'.$sticker.'" '.$disabled.'>';
-
-    //     return $result;
-
-    //    })
-    //    ->addColumn('action', function($runcard){
-    //
-
-    //         $sticker = "FOR GENERATION";
-    //         $disabled = "disabled";
-    //         $inspector_id = 0;
-
-    //         if(count($runcard->tspts_oqcvir_info) > 0)
-    //         {
-    //             if($runcard->tspts_oqcvir_info[0]->result == 1)
-    //             {
-    //                 if($runcard->tspts_oqcvir_info[0]->inspector_info_2[0] != null)
-    //                 {
-    //                     $inspector_id = $runcard->tspts_oqcvir_info[0]->inspector_info_2[0]->id;
-
-    //                     if($runcard->tspts_oqcvir_info[0]->oqc_stamp != null)
-    //                     {
-    //                         //year and month of created at
-    //                         $yearmonth = $runcard->created_at->format('ym');
-
-    //                         //ct area and terminal area
-    //                         $ct_area = $runcard->ct_area_info;
-    //                         $terminal_area = $runcard->terminal_area_info;
-
-    //                         //generated fvi no
-    //                         $fvi_no = '';
-
-    //                         if($ct_area != null && $terminal_area != null)
-    //                         {
-    //                             if($ct_area->fvi_no != null && $terminal_area->fvi_no != null)
-    //                             {
-    //                                 if($ct_area->fvi_no < 100 && $terminal_area->fvi_no < 100)
-    //                                 {
-    //                                     if($ct_area->fvi_no != $terminal_area->fvi_no)
-    //                                     {
-    //                                         $fvi_no = $terminal_area->fvi_no . $ct_area->fvi_no;
-
-    //                                         $disabled = "";
-    //                                     }
-    //                                     else
-    //                                     {
-    //                                         $fvi_no = str_pad($ct_area->fvi_no, 4, "0", STR_PAD_LEFT);
-
-    //                                         $disabled = "";
-    //                                     }
-    //                                 }
-    //                                 else
-    //                                 {
-    //                                     if($ct_area->fvi_no != null)
-    //                                     {
-    //                                         $fvi_no = str_pad($ct_area->fvi_no, 4, "0", STR_PAD_LEFT);
-
-    //                                          $disabled = "";
-    //                                     }
-    //                                     else
-    //                                     {
-    //                                         $sticker = "NO REGISTERED FVI NUMBER";
-    //                                     }
-    //                                 }
-    //                             }
-    //                             else
-    //                             {
-    //                                 $sticker = "NO REGISTERED FVI NUMBER";
-    //                             }
-    //                         }
-    //                         else
-    //                         {
-    //                             if($ct_area->fvi_no != null)
-    //                             {
-    //                                 $fvi_no = str_pad($ct_area->fvi_no, 4, "0", STR_PAD_LEFT);
-
-    //                                  $disabled = "";
-    //                             }
-    //                             else
-    //                             {
-    //                                $sticker = "NO REGISTERED FVI NUMBER";
-    //                             }
-    //                         }
-
-    //                         //oqc inspector stamp
-    //                         $oqc = explode("-", $runcard->tspts_oqcvir_info[0]->oqc_stamp)[1];
-
-    //                         //sticker to be generated
-    //                         $sticker = $yearmonth . $fvi_no . "-" . $oqc;
-    //                     }
-    //                     else
-    //                     {
-    //                          $sticker = "OQC STAMP NOT YET REGISTERED";
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     $sticker = "INSPECTOR DETAILS NOT YET ADDED";
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 $sticker = "NG RESULT";
-    //             }
-    //         }
-    //         else
-    //         {
-    //             $sticker = "FOR GENERATION";
-    //         }
-
-    //         if($runcard->ct_area_info != null)
-    //         {
-    //              $inspector_id = $runcard->ct_area_info->id;
-    //         }
-
-    //         $result = '<button class="btn btn-sm btn-primary btnPrintQRCode" packing-code="'.$sticker.'" title="Print Inspector Code" '.$disabled.' prod_id="' . $runcard->production_runcard_id . '" inspector_id="' . $inspector_id . '"><i class="fa fa-print"></i></button>';
-
-
-    //         return $result;
-
-    //     })
         ->addColumn('packing_code', function($runcard){
 
             $result = "FOR GENERATION";
@@ -5441,7 +5130,7 @@ Packing Doc. #: ' . $doc_list
 
         $ww = "N/A";
         if( count($ins_result_by_id)>0 ){
-            $dt = oqcLotApp::where('fkid_runcard' ,$request['id'])->orderBy('id', 'desc')->get();
+            $dt = oqcLotApp::where('fkid_runcard' ,$request['id'])->get();
             if( count($dt)>0 ){
                 $ww = $dt[0]->ww;
             }
@@ -5656,12 +5345,11 @@ Packing Doc. #: ' . $doc_list
     }
 
     public function get_finalpackingdetails_result_by_id(Request $request){
-        // return 'working';
         $fpqr = FPDetailsQRCode::where('id', $request->id)->get();
 
         $QrCode = '';
         if($fpqr->count() > 0){
-        $QrCode = QrCode::format('png')->size(290)->errorCorrection('H')->generate(
+        $QrCode = QrCode::format('png')->size(200)->errorCorrection('H')->generate(
             $fpqr[0]->PONo. '
 ' . $fpqr[0]->DeviceName. '
 ' . $fpqr[0]->LotQty. '

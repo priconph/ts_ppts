@@ -442,7 +442,7 @@
                   <div class="col border py-3 px-4 border-left-0 border-bottom-0">
                     <span class="badge badge-secondary">2.</span> Material List
                     <div class="float-right">
-                      <button type="button" class="btn btn-sm btn-info float-right mb-1" id="btnSaveSelectedMatSak" disabled="disabled"><i class="fa fa-save"></i> Save Material List <span id="spanNoOfSelectedMatSak"></span></button> 
+                      <button type="button" class="btn btn-sm btn-info float-right mb-1" id="btnSaveSelectedMatSak" disabled="disabled"><i class="fa fa-save"></i> Save Material List <span id="spanNoOfSelectedMatSak"></span></button>
 
                       <button type="button" class="btn btn-sm btn-success float-right mb-1" id="btnSaveSelectedEmboss" disabled="disabled" style="display: none;"><i class="fa fa-save"></i> Save Emboss Material List <span id="spanNoOfSelectedEmboss"></span></button>
                     </div>
@@ -696,7 +696,7 @@
                     </div> -->
                     <div class="row align-items-center">
                       <div class="col-sm-8">
-                        <span class="badge badge-secondary">3.</span> Stations 
+                        <span class="badge badge-secondary">3.</span> Stations
                       </div>
 
                       <div class="input-group input-group-sm mb-3 col-sm-4" style="float: right;">
@@ -786,7 +786,7 @@
                               <select class="form-control form-control-sm select2bs4" id="txt_comp_under_runcard_no" name="txt_comp_under_runcard_no">
                                 <option value="0" selected="selected">N/A</option>
                               </select>
-                              
+
                             </div>
                           </div> -->
 
@@ -811,7 +811,7 @@
                               <select class="form-control select2 select2bs4" id="sel_comp_under_runcard_no" name="sel_comp_under_runcard_no" disabled>
                                   <option value="0"> N/A </option>
                                 </select>
-                              
+
                             </div>
                           </div> -->
 
@@ -1530,14 +1530,14 @@
     /**
     * Deploys different versions of the applet depending on Java version.
     * Useful for removing warning dialogs for Java 6.  This function is optional
-    * however, if used, should replace the <applet> method.  Needed to address 
+    * however, if used, should replace the <applet> method.  Needed to address
     * MANIFEST.MF TrustedLibrary=true discrepency between JRE6 and JRE7.
     */
     function deployQZ() {
-      var attributes = {id: "qz", code:'qz.PrintApplet.class', 
+      var attributes = {id: "qz", code:'qz.PrintApplet.class',
       archive:"{{ URL::asset('public/template/plugins/qz-print-free_1.8.0_src/qz-print/dist/qz-print.jar') }}", width:1, height:1};
-      var parameters = {jnlp_href: "{{ URL::asset('public/template/plugins/qz-print-free_1.8.0_src/qz-print/dist/qz-print_jnlp.jnlp') }}", 
-      cache_option:'plugin', disable_logging:'false', 
+      var parameters = {jnlp_href: "{{ URL::asset('public/template/plugins/qz-print-free_1.8.0_src/qz-print/dist/qz-print_jnlp.jnlp') }}",
+      cache_option:'plugin', disable_logging:'false',
       initial_focus:'false'};
       if (deployJava.versionCheck("1.7+") == true) {}
         else if (deployJava.versionCheck("1.6+") == true) {
@@ -1597,7 +1597,7 @@
 
           // Searches for locally installed printer with specified name
           qz.findPrinter(name);
-          
+
           // Automatically gets called when "qz.findPrinter()" is finished.
           window['qzDoneFinding'] = function() {
           var printer = qz.getPrinter();
@@ -1678,7 +1678,7 @@
       // List of Materials in select2
       GetMaterialKittingList($(".selWBSMatKitItem"));
       GetSakidashiList($(".selWBSSakIssuItem"));
-      GetEmbossList($(".selWBSEmbossIssuItem")); 
+      GetEmbossList($(".selWBSEmbossIssuItem"));
 
       GetCboMachine($(".selectMachine"));
       // $("#txt_search_po_number").focus();
@@ -1686,7 +1686,7 @@
        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
           var target = $(e.target).attr("href") // activated tab
           // alert(target);
-          
+
           if(target == "#home"){
             $("#txt_search_material_transfer_slip").focus();
             $("#btnSaveSelectedMatSak").css({'display': 'block'});
@@ -1836,7 +1836,7 @@
                     else{
                       result = null;
                     }
-                    
+
                     return result;
                 }
             },
@@ -1883,7 +1883,7 @@
                     else{
                       result = null;
                     }
-                    
+
                     return result;
                 }
             },
@@ -1939,7 +1939,7 @@
 
                   totalNoOfNG += data.total_no_of_ng;
               });
-              
+
               $("#btnShowNGSummary").prop('disabled', false);
               $("#txt_total_no_of_ok").val(totalNoOfOk);
               $("#txt_total_no_of_ng").val(totalNoOfNG);
@@ -2216,7 +2216,7 @@
                 param.require_oqc_before_emboss          = $("#txt_prod_runcard_require_oqc_before_emboss").val();
             }
           },
-          
+
           "columns":[
             { "data" : "raw_action", orderable:false, searchable:false },
             { "data" : "step_num" , orderable:true, searchable:false},
@@ -2260,7 +2260,7 @@
           info: false,
           searching: false,
           pageLength: -1,
-          "columnDefs": [ 
+          "columnDefs": [
                 { "visible": false, "targets": groupStations },
                 { "visible": false, "targets": groupStations + 1 },
                 {
@@ -2320,7 +2320,7 @@
                 param.prod_runcard_id_query          = $("#txt_prod_runcard_id_query").val();
             }
           },
-          
+
           "columns":[
             { "data" : "raw_action", orderable:false, searchable:false },
             // { "data" : "raw_status", orderable:false, searchable:false },
@@ -2345,12 +2345,12 @@
         // if($(this).val() == 0){
         //   $('#myTab a[href="#home"]').tab('show');
         //   $('#myTab a[href="#profile"]').tab('show');
-        //   $('#myTab a[href="#materialEmbossTab"]').tab('hide'); 
+        //   $('#myTab a[href="#materialEmbossTab"]').tab('hide');
         // }
         // else{
         //   $('#myTab a[href="#home"]').tab('hide');
         //   $('#myTab a[href="#profile"]').tab('hide');
-        //   $('#myTab a[href="#materialEmbossTab"]').tab('show'); 
+        //   $('#myTab a[href="#materialEmbossTab"]').tab('show');
         // }
       });
 
@@ -2365,7 +2365,7 @@
                 param.po_no          = currentPoNo;
             }
           },
-          
+
           "columns":[
             { "data" : "production_runcard_id", orderable:false, searchable:false },
             { "data" : "production_runcard_details.runcard_no", orderable:false, searchable:true },
@@ -2377,7 +2377,7 @@
           info: true,
           searching: true,
           // pageLength: -1,
-          "columnDefs": [ 
+          "columnDefs": [
                 { "visible": false, "targets": groupMODRuncardNo },
                 { "visible": false, "targets": 1 },
                 // { "visible": false, "targets": groupMODRuncardNo + 1 },
@@ -2637,7 +2637,7 @@
                 default:
                 break;
               }
-            }            
+            }
           }//key
         }
         // SCAN PO, LOT, TRANSFER SLIP CODE
@@ -2690,7 +2690,7 @@
                 arrSelectedSakidashi.push(sakidashiId);
               }
           }
-          else{  
+          else{
               // Unchecked
               let index = arrSelectedSakidashi.indexOf(sakidashiId);
               arrSelectedSakidashi.splice(index, 1);
@@ -2700,14 +2700,14 @@
           if(noOfSelected > 0){
             $("#spanNoOfSelectedMatSak").text('(' + noOfSelected + ')');
             if($("#txt_prod_runcard_id_query").val() == "" || $("#txt_prod_runcard_id_query").val() == null){
-            
+
             }
             else{
               $("#btnSaveSelectedMatSak").prop('disabled', false);
             }
           }
           else{
-            $("#spanNoOfSelectedMatSak").text(''); 
+            $("#spanNoOfSelectedMatSak").text('');
             $("#btnSaveSelectedMatSak").prop('disabled', true);
           }
         }
@@ -2727,7 +2727,7 @@
                 arrSelectedEmboss.push(embossId);
               }
           }
-          else{  
+          else{
               // Unchecked
               let index = arrSelectedEmboss.indexOf(embossId);
               arrSelectedEmboss.splice(index, 1);
@@ -2735,18 +2735,18 @@
 
           let noOfSelected = parseInt(arrSelectedEmboss.length);
           if(noOfSelected > 0){
-            // For button of adding material 
+            // For button of adding material
             $("#spanNoOfSelectedEmboss").text('(' + noOfSelected + ')');
             if($("#txt_prod_runcard_id_query").val() == "" || $("#txt_prod_runcard_id_query").val() == null){
-            
+
             }
             else{
               $("#btnSaveSelectedEmboss").prop('disabled', false);
             }
           }
           else{
-            // For button of adding material 
-            $("#spanNoOfSelectedEmboss").text(''); 
+            // For button of adding material
+            $("#spanNoOfSelectedEmboss").text('');
             $("#btnSaveSelectedEmboss").prop('disabled', true);
           }
         }
@@ -2776,7 +2776,7 @@
           if(noOfSelected > 0){
             $("#spanNoOfSelectedMatSak").text('(' + noOfSelected + ')');
             if($("#txt_prod_runcard_id_query").val() == "" || $("#txt_prod_runcard_id_query").val() == null){
-            
+
             }
             else{
               // $("#btnSaveSelectedMatSak").prop('disabled', false);
@@ -2837,7 +2837,7 @@
             // $("#btnSaveSelectedMatSak").prop('disabled', false);
           }
           else{
-            $("#spanNoOfSelectedMatSak").text(''); 
+            $("#spanNoOfSelectedMatSak").text('');
             // $("#btnSaveSelectedMatSak").prop('disabled', true);
           }
 
@@ -2971,7 +2971,7 @@
         sakidashiCtrlNo = "";
         $("#txt_sakidashi_ctrl_no_lbl").val("");
         GetProdRuncardById(prodRuncardId);
-      });      
+      });
 
       $("#txt_edit_prod_runcard_operator").change(function(){
         let certifiedOperators = $("#txt_edit_prod_runcard_cert_operator").val();
@@ -3123,7 +3123,7 @@
               $('#mdl_alert #mdl_alert_title').html(data['title']);
               $('#mdl_alert #mdl_alert_body').html(data['body']);
               $('#mdl_alert').modal('show');
-              
+
               if(data['result'] != '0'){
                 dt_prod_runcard_stations.ajax.reload();
               }
@@ -3249,7 +3249,7 @@
       //                 // $("#btn_approve_qc").prop('disabled', true);
       //               }
       //               else{
-      //                 // $("#btn_approve_qc").prop('disabled', false); 
+      //                 // $("#btn_approve_qc").prop('disabled', false);
       //               }
       //             }
       //             else{
@@ -3289,7 +3289,7 @@
       //         //       $("#btn_approve_qc").prop('disabled', true);
       //         //     }
       //         //     else{
-      //         //       $("#btn_approve_qc").prop('disabled', false); 
+      //         //       $("#btn_approve_qc").prop('disabled', false);
       //         //     }
       //         //   }
       //         //   else{
@@ -3313,7 +3313,7 @@
       //         HandleButtons(true);
       //         let prodRuncardStat = data['prod_runcard']['status'];
       //         if(prodRuncardStat == 1){
-      //           $("#btn_edit_material_details_primary").prop('disabled', true);  
+      //           $("#btn_edit_material_details_primary").prop('disabled', true);
       //           $("#btnSaveSelectedMatSak").prop('disabled', false);
       //           $("#btn_setup_stations").prop('disabled', true);
       //           $("#btn_edit_material_details_verification").prop('disabled', true);
@@ -3321,7 +3321,7 @@
       //           $("#btn_approve_qc").prop('disabled', true);
       //         }
       //         else if(prodRuncardStat == 2){
-      //           $("#btn_edit_material_details_primary").prop('disabled', true);  
+      //           $("#btn_edit_material_details_primary").prop('disabled', true);
       //           $("#btnSaveSelectedMatSak").prop('disabled', true);
       //           $("#btn_setup_stations").prop('disabled', false);
       //           $("#btn_edit_material_details_verification").prop('disabled', true);
@@ -3329,7 +3329,7 @@
       //           $("#btn_approve_qc").prop('disabled', true);
       //         }
       //         else if(prodRuncardStat == 3){
-      //           $("#btn_edit_material_details_primary").prop('disabled', true);  
+      //           $("#btn_edit_material_details_primary").prop('disabled', true);
       //           $("#btnSaveSelectedMatSak").prop('disabled', true);
       //           $("#btn_setup_stations").prop('disabled', true);
       //           $("#btn_edit_material_details_verification").prop('disabled', false);
@@ -3337,7 +3337,7 @@
       //           $("#btn_approve_qc").prop('disabled', true);
       //         }
       //         else if(prodRuncardStat == 4){
-      //           $("#btn_edit_material_details_primary").prop('disabled', true);  
+      //           $("#btn_edit_material_details_primary").prop('disabled', true);
       //           $("#btnSaveSelectedMatSak").prop('disabled', true);
       //           $("#btn_setup_stations").prop('disabled', true);
       //           $("#btn_edit_material_details_verification").prop('disabled', true);
@@ -3345,7 +3345,7 @@
       //           $("#btn_approve_qc").prop('disabled', true);
       //         }
       //         else if(prodRuncardStat == 5){
-      //           $("#btn_edit_material_details_primary").prop('disabled', true);  
+      //           $("#btn_edit_material_details_primary").prop('disabled', true);
       //           $("#btnSaveSelectedMatSak").prop('disabled', true);
       //           $("#btn_setup_stations").prop('disabled', true);
       //           $("#btn_edit_material_details_verification").prop('disabled', true);
@@ -3404,7 +3404,7 @@
       // }
 
       // function HandleButtons(status){
-      //   $("#btn_edit_material_details_primary").prop('disabled', status);  
+      //   $("#btn_edit_material_details_primary").prop('disabled', status);
       //   $("#btnSaveSelectedMatSak").prop('disabled', status);
       //   $("#btn_setup_stations").prop('disabled', status);
       //   $("#btn_edit_material_details_verification").prop('disabled', status);
@@ -3526,7 +3526,7 @@
       //       // $("#btn_edit_material_details_verification").prop('disabled', false);
       //     }
       //   }
-      //   else{ 
+      //   else{
       //     // $("#btn_edit_material_details_verification").prop('disabled', true);
       //   }
       // }
@@ -3591,7 +3591,7 @@
         $('#tbl_prod_runcard_stations tbody').find('tr').each(function (key, val) {
               var this_row = $(this);
               let tdStepNum = $.trim(this_row.find('td:eq(1)').html()).split('-')[0];
-              
+
               if(stepNumOnly == tdStepNum){
                 sameStepNumCounter++;
               }
@@ -3770,14 +3770,14 @@ function OutputDataCounter(api) {
             // $("#btn_edit_material_details_verification").prop('disabled', false);
           }
         }
-        else{ 
+        else{
           // $("#btn_edit_material_details_verification").prop('disabled', true);
         }
       }
 
 
       function HandleButtons(status){
-        $("#btn_edit_material_details_primary").prop('disabled', status);  
+        $("#btn_edit_material_details_primary").prop('disabled', status);
         $("#btnSaveSelectedMatSak").prop('disabled', status);
         $("#btnSaveSelectedEmboss").prop('disabled', status);
         $("#btn_setup_stations").prop('disabled', status);
@@ -3942,7 +3942,7 @@ function OutputDataCounter(api) {
     //         $("#txt_po_number_lbl").val('');
     //         $("#txt_device_name_lbl").val('');
     //         $("#txt_device_code_lbl").val('');
-    //         $("#txt_po_qty_lbl").val(''); 
+    //         $("#txt_po_qty_lbl").val('');
     //         $("#txt_lot_qty").val("");
     //       }
     //     }
@@ -4037,7 +4037,7 @@ function OutputDataCounter(api) {
             $("#txt_po_number_lbl").val('');
             $("#txt_device_name_lbl").val('');
             $("#txt_device_code_lbl").val('');
-            $("#txt_po_qty_lbl").val(''); 
+            $("#txt_po_qty_lbl").val('');
             $("#txt_lot_qty").val("");
           }
         }
@@ -4186,7 +4186,7 @@ function OutputDataCounter(api) {
                     // $("#btn_approve_qc").prop('disabled', true);
                   }
                   else{
-                    // $("#btn_approve_qc").prop('disabled', false); 
+                    // $("#btn_approve_qc").prop('disabled', false);
                   }
                 }
                 else{
@@ -4226,7 +4226,7 @@ function OutputDataCounter(api) {
             //       $("#btn_approve_qc").prop('disabled', true);
             //     }
             //     else{
-            //       $("#btn_approve_qc").prop('disabled', false); 
+            //       $("#btn_approve_qc").prop('disabled', false);
             //     }
             //   }
             //   else{
@@ -4250,7 +4250,7 @@ function OutputDataCounter(api) {
             HandleButtons(true);
             let prodRuncardStat = data['prod_runcard']['status'];
             if(prodRuncardStat == 1){
-              $("#btn_edit_material_details_primary").prop('disabled', true);  
+              $("#btn_edit_material_details_primary").prop('disabled', true);
               $("#btnSaveSelectedMatSak").prop('disabled', false);
               $("#btnSaveSelectedEmboss").prop('disabled', true);
               $("#btn_setup_stations").prop('disabled', true);
@@ -4259,7 +4259,7 @@ function OutputDataCounter(api) {
               $("#btn_approve_qc").prop('disabled', true);
             }
             else if(prodRuncardStat == 2){
-              $("#btn_edit_material_details_primary").prop('disabled', true);  
+              $("#btn_edit_material_details_primary").prop('disabled', true);
               // $("#btnSaveSelectedMatSak").prop('disabled', true);
               $("#btnSaveSelectedMatSak").prop('disabled', false);
               $("#btnSaveSelectedEmboss").prop('disabled', true);
@@ -4269,7 +4269,7 @@ function OutputDataCounter(api) {
               $("#btn_approve_qc").prop('disabled', true);
             }
             else if(prodRuncardStat == 3){
-              $("#btn_edit_material_details_primary").prop('disabled', true);  
+              $("#btn_edit_material_details_primary").prop('disabled', true);
               $("#btnSaveSelectedMatSak").prop('disabled', false);
               $("#btnSaveSelectedEmboss").prop('disabled', true);
               $("#btn_setup_stations").prop('disabled', true);
@@ -4278,7 +4278,7 @@ function OutputDataCounter(api) {
               $("#btn_approve_qc").prop('disabled', true);
             }
             else if(prodRuncardStat == 4){
-              $("#btn_edit_material_details_primary").prop('disabled', true);  
+              $("#btn_edit_material_details_primary").prop('disabled', true);
               $("#btnSaveSelectedMatSak").prop('disabled', true);
               $("#btnSaveSelectedEmboss").prop('disabled', true);
               $("#btn_setup_stations").prop('disabled', true);
@@ -4287,7 +4287,7 @@ function OutputDataCounter(api) {
               $("#btn_approve_qc").prop('disabled', true);
             }
             else if(prodRuncardStat == 5){
-              $("#btn_edit_material_details_primary").prop('disabled', true);  
+              $("#btn_edit_material_details_primary").prop('disabled', true);
               $("#btnSaveSelectedMatSak").prop('disabled', true);
               $("#btnSaveSelectedEmboss").prop('disabled', true);
               $("#btn_setup_stations").prop('disabled', true);
@@ -4299,7 +4299,7 @@ function OutputDataCounter(api) {
               $("#btnSaveSelectedEmboss").prop('disabled', false);
             }
             else if(prodRuncardStat == 8){
-              $("#btnSaveSelectedEmboss").prop('disabled', true); 
+              $("#btnSaveSelectedEmboss").prop('disabled', true);
             }
             else{
               HandleButtons(true);
@@ -4388,7 +4388,7 @@ function OutputDataCounter(api) {
         },
         completed     : function(data){
           // alert('Saved!');
-          GetProdRuncardById($("#txt_prod_runcard_id_query").val()); 
+          GetProdRuncardById($("#txt_prod_runcard_id_query").val());
         },
         error     : function(data){
 
@@ -4429,7 +4429,7 @@ function OutputDataCounter(api) {
         },
         completed     : function(data){
           // alert('Saved!');
-          GetProdRuncardById($("#txt_prod_runcard_id_query").val()); 
+          GetProdRuncardById($("#txt_prod_runcard_id_query").val());
         },
         error     : function(data){
 
@@ -4474,7 +4474,7 @@ function OutputDataCounter(api) {
                 $('#mdl_alert #mdl_alert_title').html(data['title']);
                 $('#mdl_alert #mdl_alert_body').html(data['body']);
                 $('#mdl_alert').modal('show');
-                
+
                 if(data['result'] != '0'){
                   dt_prod_runcard_stations.draw();
                 }
@@ -4532,7 +4532,7 @@ function OutputDataCounter(api) {
             $('#txt_edit_prod_runcard_station_substation').val(data[0]['sub_station']['name']);
             $('#txt_edit_prod_runcard_station_date').val( getdate( data[0]['created_at']?data[0]['created_at']:getcurrentdate() ) );
             // $('#txt_edit_prod_runcard_station_date').val(data[0]['created_at']);
-            
+
             // if(data[0]['operator_info'] != null){
             //   $('#txt_edit_prod_runcard_operator').val(data[0]['operator_info']['name']);
             // }
@@ -4611,10 +4611,10 @@ function OutputDataCounter(api) {
                   arrMaterialKittingData.push(jsonObject['material_process']['material_details'][index].item + '--' + jsonObject['material_process']['material_details'][index].item_desc);
                 }
                 else if(jsonObject['material_process']['material_details'][index].tbl_wbs == 2 && jsonObject['material_process']['material_details'][index].has_emboss == 0){
-                  arrSakidashiIssuanceData.push(jsonObject['material_process']['material_details'][index].item + '--' + jsonObject['material_process']['material_details'][index].item_desc); 
+                  arrSakidashiIssuanceData.push(jsonObject['material_process']['material_details'][index].item + '--' + jsonObject['material_process']['material_details'][index].item_desc);
                 }
                 else if(jsonObject['material_process']['material_details'][index].tbl_wbs == 2 && jsonObject['material_process']['material_details'][index].has_emboss == 1){
-                  arrEmbossData.push(jsonObject['material_process']['material_details'][index].item + '--' + jsonObject['material_process']['material_details'][index].item_desc);  
+                  arrEmbossData.push(jsonObject['material_process']['material_details'][index].item + '--' + jsonObject['material_process']['material_details'][index].item_desc);
                 }
               }
             }
@@ -4682,7 +4682,7 @@ function OutputDataCounter(api) {
       // $('#txt_lot_qty').prop('readonly',v);
       // $('#txt_runcard_no').prop('readonly',v);
       // $('#txt_assessed_qty').prop('readonly',v);
-     
+
       // $('#txt_a_drawing_no').prop('readonly',v);
       // $('#txt_a_drawing_rev').prop('readonly',v);
       // $('#txt_g_drawing_no').prop('readonly',v);
@@ -4757,3 +4757,4 @@ function OutputDataCounter(api) {
   </script>
   @endsection
 @endauth
+

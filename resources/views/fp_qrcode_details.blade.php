@@ -35,7 +35,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Final Packing Detail</h1>
+            <h1>Final Packing Detailsss</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -259,7 +259,7 @@
     <!-- /.modal-dialog -->
   </div>
 
-
+  
   @endsection
 
   @section('js_content')
@@ -280,7 +280,7 @@
           "ajax" : {
             url: "view_final_packing_details_qr",
           },
-
+          
           "columns":[
             { "data" : "action", orderable:false, searchable:false },
             { "data" : "PONo" },
@@ -297,7 +297,7 @@
           $(this).closest('tr').addClass('table-active');
         });
 
-        // Add Assembly Line
+        // Add Assembly Line 
         $("#formAddFPDetailsQRCode").submit(function(event){
           event.preventDefault();
           $("#txtAddDeviceName").val( $("#txtAddDeviceName_holder").val() )
@@ -320,7 +320,7 @@
                 $("#txtAddDeviceName_holder").attr('disabled', false)
               }
             }
-          });
+          }); 
         })
 
         $("#txtEditPONo").keyup(function(event){
@@ -339,7 +339,7 @@
                 $("#txtEditDeviceName_holder").attr('disabled', false)
               }
             }
-          });
+          }); 
         })
 
         $("#btnShowAddFPDetailsQRCodeModal").click(function(){
@@ -419,7 +419,7 @@
             }else{
               $('#lbl_ww').text( 'WW' + data['fpqr'][0]['ww'] );
             }
-
+            
             img_barcode_po_no    = data['QrCode'];
             lbl_po_no            = data['fpqr'][0]['PONo'];
             lbl_device_name      = data['fpqr'][0]['DeviceName'];
@@ -431,15 +431,15 @@
             }else{
               lbl_ww             = 'WW' + data['fpqr'][0]['ww'];
             }
-
+ 
 
             $('#modal_Final_Packing_QRcode').modal({
               backdrop: 'static',
-              keyboard: false,
+              keyboard: false, 
               show: true
             });
 
-
+            
         }, error    : function (data) {
         alert('ERROR: '+data);
         }
@@ -450,16 +450,16 @@
     $("#btn_print_barcode").click(function(){
       popup = window.open();
         let content = '';
-
+        
         content += '<html>';
         content += '<head>';
         content += '<title></title>';
         content += '<style type="text/css">';
-
+        
         content += '@media print { .pagebreak { page-break-before: always; } }';
-
+        
         content += '.rotated {';
-        content += 'width: 290px;';
+        content += 'width: 150px;';
 
         content += '}';
 
@@ -469,9 +469,9 @@
 
           content += '<table>';
           content += '<br>';
-          content += '<tr style="width: 290px;">';
+          content += '<tr style="width: 150px;">';
               content += '<td style="text-align: left;">';
-              content += '<img src="' + img_barcode_po_no + '" style="min-width: 100px; max-width: 100px;">';
+              content += '<img src="' + img_barcode_po_no + '" style="min-width: 45px; max-width: 45px;">';
               content += '</td>';
               content += '<td style="font-size: 10px; font-family: Arial;">';
               content += '<label><b>' + lbl_po_no + '</label><br>';
@@ -491,7 +491,6 @@
         popup.print();
         popup.close();
     });
-
 
   </script>
   @endsection
