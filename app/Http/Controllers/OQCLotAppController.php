@@ -1092,8 +1092,18 @@ class OQCLotAppController extends Controller
 
             return $result;
         })
+         ->addColumn('partial_qty', function($oqc_inspection){
+            $result = "";
+            if ($oqc_inspection->oqc_details != null){
+                $result = $oqc_inspection->oqc_details->partial_qty;
+            }else{
+                $result ='---';
+            }
 
-        ->rawColumns(['action','status_raw','fvo_raw','output_qty_raw','subm_raw','sub_lot_raw'])
+            return $result;
+        })
+
+        ->rawColumns(['action','status_raw','fvo_raw','output_qty_raw','subm_raw','sub_lot_raw',])
         // ->rawColumns(['action','status_raw','fvo_raw','output_qty_raw','subm_raw','sub_lot_raw','packing_code_raw'])
         ->make(true);
     }
@@ -1345,6 +1355,9 @@ class OQCLotAppController extends Controller
                 ->orWhere('status', 8);
         })
         ->get();
+
+        // return 'asd';
+        // return $runcard_details;
         //- sub lot no.
 
         // return $runcard_details[0]->yeu_kitting;
@@ -1463,7 +1476,9 @@ class OQCLotAppController extends Controller
 
     // Add
     public function add_oqc_lot_app(Request $request){
+        // return 'qweqwe';
         date_default_timezone_set('Asia/Manila');
+
 
         $user_exist = User::where('id', $request->add_packing_operator_name)->get();
 
@@ -1513,7 +1528,7 @@ class OQCLotAppController extends Controller
 
             DB::beginTransaction();
 
-            if ( $request->name_OutputQty == $request->name_LotQty ){
+            if ( $request->name_OutputQty == $request->name_LotQty ){ // detect if partial lot or not.
                 try{
 
                     $runcard = ProductionRuncard::find($request->hidden_runcard_id);
@@ -1523,10 +1538,12 @@ class OQCLotAppController extends Controller
                     if( isset($runcard->id) ){
                         //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
                         $device_name = $runcard->device_name;
+
                         $dn = $runcard->device_name;
                         $d_name = Device::where('name', $dn)->get();
                         $device_name = CommonController::getInstance()->validate_device_name($device_name);
                         $device = Device::where('name', $device_name)->get();
+                        // return $device;
                         if( count($device)>0 ){
 
                             OQCLotApp::insert([
@@ -1588,16 +1605,61 @@ class OQCLotAppController extends Controller
                 try{
 
                     $runcard = ProductionRuncard::find($request->hidden_runcard_id);
-
+                    // return $data;
                     // return $runcard;
                     if( isset($runcard->id) ){
                         //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
                         $device_name = $runcard->device_name;
                         $device_name = CommonController::getInstance()->validate_device_name($device_name);
-                        $device = Device::where('name', $device_name)->get();
+                        $device = Device::where('name', $device_name)
+                        ->orderBy('id','desc')
+                        ->get();
 
-                        // return $device_name;
+                        // boss da
+                        $outputQty = (int) $request->name_OutputQty;
+                        $lotQty = (int) $request->name_LotQty;
+                        $trayLotQty = (int) $device[0]->boxing;
+                        $actualQty = (int) $request->name_OutputQty;
+                        $partialQty = $request->hidden_partial_qty;
+
+                        // return $trayLotQty;
+
+                        // Detect if actual quantity has a partial
+                        $remainder = $actualQty % $trayLotQty;
+
+
                         if( count($device)>0 ){
+
+                            // First request: detect partial lot
+                            if ($remainder > 0 && empty($partialQty)) {
+
+                                return response()->json([
+                                    'result' => 'partial_lot',
+                                    'message' => 'This is a partial lot. Please enter the partial quantity.',
+                                    'actual_qty' => $actualQty,
+                                    'tray_lot_qty' => $trayLotQty,
+                                    'remainder' => $remainder
+                                ]);
+
+
+                            }
+
+                            // Second request: user already entered partial quantity
+                            if ($remainder > 0 && !empty($partialQty)) {
+
+                                if ($partialQty <= 0) {
+                                    return response()->json([
+                                        'error_msg' => 'Partial quantity must be greater than 0.'
+                                    ]);
+                                }
+
+                                if ($partialQty != $remainder) {
+                                    return response()->json([
+                                        'error_msg' => 'Partial quantity must be exactly ' . $remainder . '.',
+                                        'result' => 'x'
+                                    ]);
+                                }
+                            }
 
                             OQCLotApp::insert([
                                 'fkid_runcard' => $request->hidden_runcard_id,
@@ -1614,6 +1676,7 @@ class OQCLotAppController extends Controller
                                 'print_lot' => $request->name_PrintLotNo,
                                 'lot_qty' => $request->name_LotQty,
                                 'output_qty' => $request->name_OutputQty,
+                                'partial_qty' => $partialQty,
                                 'direction' => ($request->name_UrgentDirection)?$request->name_UrgentDirection:'N/A',
                                 'Adrawing' => $request->name_ADrawing,
                                 'Gdrawing' => $request->name_GDrawing,
