@@ -632,12 +632,36 @@ function TSPTSSubmitPackingConfirmation()
         		$('#formPackingConfirmation')[0].reset();
         		toastr.success('Successfully Submitted Confirmation!');
 
-
+                $('#confirmed_partial').val(0);
 
         		dt_packing_confirmation.draw();
         	}
-        	else
-        	{
+            //boss da
+            else if(JsonObject['result'] == 'partial_lot'){
+                // toastr.warning(JsonObject['message']);
+                Swal.fire({
+                    title: 'Partial Lot',
+                    text: 'This lot contains a partial quantity of ' +
+                        JsonObject['partialQty'] +
+                        '. Do you want to continue?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel'
+                }).then(function(result) {
+
+                     // SweetAlert2 8.8.5
+                    if (result.value !== undefined) {
+
+                        // Tell backend that user already confirmed
+                        $('#confirmed_partial').val(1);
+
+                        // Submit the form again
+                        TSPTSSubmitPackingConfirmation();
+                    }
+
+                });
+            }
+        	else{
         		toastr.error('Error Submitting Details!');
 
         		if(JsonObject['error']['add_series_v_label'] === undefined)
@@ -694,14 +718,6 @@ function TSPTSSubmitPackingConfirmation()
         			$('#add_packing_operator_name').addClass('is-invalid');
         		}
 
-        		// if(JsonObject['error']['add_confirmation_datetime'] === undefined)
-        		// {
-        		// 	$('#add_confirmation_datetime').removeClass('is-invalid');
-        		// }
-        		// else
-        		// {
-        		// 	$('#add_confirmation_datetime').addClass('is-invalid');
-        		// }
 
         	}
 
@@ -747,8 +763,35 @@ function TSPTSSubmitPackingInspection()
                 $('#modalPackingInspection').modal('hide');
                 $('#formPackingInspection')[0].reset();
                 toastr.success('Successfully Submitted Inspection!');
+                $('#confirmed_partial').val(0);
+
 
                 dt_packing_inspection.draw();
+            }
+            //boss da
+            else if(JsonObject['result'] == 'partial_lot'){
+                // toastr.warning(JsonObject['message']);
+                Swal.fire({
+                    title: 'Partial Lot',
+                    text: 'This lot contains a partial quantity of ' +
+                        JsonObject['partialQty'] +
+                        '. Do you want to continue?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel'
+                }).then(function(result) {
+
+                     // SweetAlert2 8.8.5
+                    if (result.value !== undefined) {
+
+                        // Tell backend that user already confirmed
+                        $('#confirmed_partial').val(1);
+
+                        // Submit the form again
+                        TSPTSSubmitPackingInspection();
+                    }
+
+                });
             }
             else
             {
@@ -878,9 +921,36 @@ function TSPTSSubmitSupervisorValidation()
             {
                 $('#modalSupervisorValidation').modal('hide');
                 $('#formSupervisorValidation')[0].reset();
+                $('#confirmed_partial').val(0);
+
                 toastr.success('Successfully Submitted Validation!');
 
                 dt_supervisor_validation.draw();
+            }
+            //boss da
+               else if(JsonObject['result'] == 'partial_lot'){
+                // toastr.warning(JsonObject['message']);
+                Swal.fire({
+                    title: 'Partial Lot',
+                    text: 'This lot contains a partial quantity of ' +
+                        JsonObject['partialQty'] +
+                        '. Do you want to continue?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel'
+                }).then(function(result) {
+
+                     // SweetAlert2 8.8.5
+                    if (result.value !== undefined) {
+
+                        // Tell backend that user already confirmed
+                        $('#confirmed_partial').val(1);
+
+                        // Submit the form again
+                        TSPTSSubmitSupervisorValidation();
+                    }
+
+                });
             }
             else
             {

@@ -2422,7 +2422,7 @@
           // }
         }
 
-        console.log(view);
+        // console.log(view);
 
         if( view ){
           $.ajax({
@@ -2441,6 +2441,9 @@
 
 
                 let data = JsonObject['data'][0]
+                let withPartial = JsonObject['data'][0]['oqc_details']['partial_qty'] > 0 || JsonObject['data'][0]['oqc_details']['partial_qty'] != null ? true : false;
+
+                // console.log('withPartial', withPartial)
 
                 // $("#modalRuncardDetails_runcard_id").val( data['id'] )
                 $("#modalRuncardDetails_runcard_id").val( data['_runcard'][0]['id'] )
@@ -2491,6 +2494,10 @@
 
                 $("#modalRuncardDetails_created_at").val( data['created_at'] )
                 $("#modalRuncardDetails_application_datetime").val( data['application_datetime'] )
+
+                // if(withPartial){
+                //     // console.log('truelabels')
+                // }
 
 
                 $.ajax({
@@ -2668,14 +2675,67 @@
                         $('#oqc_details_scan_id_modal').modal('hide')
                         $('#modalRuncardDetails').modal('hide')
                         // window.open("http://192.168.3.246/pmi-subsystem/oqcinspection")
-                      }else{
+                      }
+                      //boss da
+                      else if (data['result'] == 'partial_lot') {
+
+                            var employeeId = $('#oqc_details_scan_id_id').val();
+                            var runcardId = $('#modalRuncardDetails_runcard_id').val();
+
+                            console.log('Employee ID:', employeeId);
+                            console.log('Runcard ID:', runcardId);
+
+                            Swal.fire({
+                                title: 'Partial Lot',
+                                text: 'This lot contains a partial quantity of ' +
+                                    data['partialQty'] +
+                                    '. Do you want to continue?',
+                                showCancelButton: true,
+                                confirmButtonText: 'Confirm',
+                                cancelButtonText: 'Cancel'
+                            }).then(function(result) {
+
+                                if (result.value !== undefined) {
+
+                                    $.ajax({
+                                        data: {
+                                            _token: '{{ csrf_token() }}',
+                                            id: runcardId,
+                                            employee_id: employeeId,
+                                            confirmed_partial: 1
+                                        },
+                                        type: 'post',
+                                        dataType: 'json',
+                                        url: 'updateOqcInspectIfViewDrawingAndScanTrays',
+
+                                        success: function(data) {
+
+                                            if (data['result'] == 1) {
+
+                                                $('#oqc_details_scan_id_modal').modal('hide');
+                                                $('#modalRuncardDetails').modal('hide');
+
+                                            } else {
+                                                toastr.error(
+                                                    data['error_msg'] ||
+                                                    'Something went wrong.'
+                                                );
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                      else{
                         alert( 'Something went wrong.' )
                       }
                     }
                   })
                 }
-                else if(JsonObject['result'] == 0)
-                  toastr.error('Scanned Employee ID is not OQC.');
+
+                else if(JsonObject['result'] == 0){
+                    toastr.error('Scanned Employee ID is not OQC.');
+                }
                 else
                   toastr.error(JsonObject['error_msg']);
               },
@@ -2716,7 +2776,9 @@
         }else{
 
 
+            // if(){
 
+            // }
           $('#oqc_details_scan_id_modal').modal('show')
           $('#oqc_details_scan_id_id').val('')
           $('#oqc_details_scan_id_id').focus()

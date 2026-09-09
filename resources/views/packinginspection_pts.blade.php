@@ -194,6 +194,7 @@
                 <div class="input-group-prepend w-50">
                   <span class="input-group-text w-100" id="basic-addon1">PO Number</span>
                 </div>
+                <input type="hidden" name="confirmed_partial" id="confirmed_partial" value="0">
                 <input type="text" class="form-control form-control-sm" id="add_po_no" name="add_po_no" readonly>
               </div>
             </div>
@@ -373,6 +374,22 @@
                 </div>
               </div>
             </div>
+
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend w-50">
+                        <span class="input-group-text w-100" id="basic-addon1">Actual Packing VS. Packing Document Tally?</span>
+                        </div>
+                        <select class="form-control form-control-sm" id="add_actual_v_packing_doc" name="add_actual_v_packing_doc">
+                            <option selected disabled>-- Choose One --</option>
+                            <option value='1'>YES</option>
+                            <option value='2'>NO</option>
+                            <option value='3'>N/A</option>
+                        </select>
+                    </div>
+                </div>
+          </div>
 
             <div class="row">
                <div class="col">

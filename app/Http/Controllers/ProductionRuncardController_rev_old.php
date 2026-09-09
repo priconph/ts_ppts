@@ -7977,9 +7977,13 @@ class ProductionRuncardController_rev extends Controller
             //     return response()->json(['error_msg' => 'Please submit first the last lot #.']);
         }
 
-        $data = ProductionRuncard::where('po_no', $request->po_no)->orderBy('id')->limit(1)->get();
+        $data = ProductionRuncard::with(['oqc_details'])->where('po_no', $request->po_no)->orderBy('id')->limit(1)->get();
+
+        // return $data;
 
         if( count($data)>0 ){
+            // return $data[0]->oqc_details['partial_qty'];
+
             $data[0]->_runcard = ProductionRuncard::where('po_no', $request->po_no)->where('id', $request->runcard_id)->orderBy('id')->limit(1)->get();
 
             //04082024 by Nessa
@@ -8074,13 +8078,68 @@ class ProductionRuncardController_rev extends Controller
         // OQCInspection_2_ViewChecker::where('runcard_id', $request->id)->updated([
         //     'is_view_and_scan' => 1
         // ]);
+        // $data2 = $request->all();
+        // return $data2;
+        // if
+        // $withPartial = oqcLotApp::where('fkid_runcard', $request->id)->get();
+        // $partialQty = 0;
+        // // return $withPartial;
+        // if( count($withPartial) > 0 ){
+        //     $partialQty = $withPartial[0]->partial_qty;
+        //     return response()->json([
+        //         'result' => 'partial_lot',
+        //         'message' => 'This is a partial lot. Please enter the partial quantity.',
+        //         'partialQty' => $partialQty,
+        //     ]);
+        // }else{
+        //     $data = new OQCInspection_2_ViewChecker();
+        //     $data->runcard_id = $request->id;
+        //     $data->is_view_scan = 1;
+        //     $data->employee_id = $request->employee_id;
+        //     $data->created_at = date('Y-m-d H:i:s');
+        //     $data->save();
+        //     return response()->json(['result' => 1]);
+        // }
+
+        //boss da
+        $withPartial = oqcLotApp::where('fkid_runcard', $request->id)->get();
+
+        $partialQty = 0;
+
+        //clark comment 09/08/26
+        // if (count($withPartial) > 0  && $request->confirmed_partial != 1) {
+        if ($withPartial[0]->partial_qty > 0  && $request->confirmed_partial != 1) {
+
+            $partialQty = $withPartial[0]->partial_qty;
+
+            if($partialQty <= 0){
+                return response()->json([
+                    'result' => 'partial_lot',
+                    'message' => 'This is a partial lot. Please enter the partial quantity.',
+                    'partialQty' => $partialQty,
+                ]);
+            }
+
+
+        }
+
+        // Continue here if:
+        // 1. No partial lot exists, OR
+        // 2. Partial lot exists but user already confirmed
+
         $data = new OQCInspection_2_ViewChecker();
+
         $data->runcard_id = $request->id;
         $data->is_view_scan = 1;
         $data->employee_id = $request->employee_id;
         $data->created_at = date('Y-m-d H:i:s');
         $data->save();
-        return response()->json(['result' => 1]);
+
+        return response()->json([
+            'result' => 1
+        ]);
+
+
     }
 
     public function getViewandScanTray(Request $request)
@@ -8092,7 +8151,9 @@ class ProductionRuncardController_rev extends Controller
     {
         // return 'true';
         $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->lotapp_id)->get();
+
         $result = ProductionRuncardStation::where('production_runcard_id', $request->lotapp_id)->where('status', 1)->get();
+
         $ttl = 0;
         for ($i=0; $i < count($result); $i++)
             $ttl = $ttl + $result[$i]->qty_output;
