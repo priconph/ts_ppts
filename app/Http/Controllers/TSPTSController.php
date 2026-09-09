@@ -108,17 +108,18 @@ class TSPTSController extends Controller
         // return 'asd';
         // return $request->po_num;
         $subPO = substr($request->po_num, 0, 15); // added by migs and jd 11-06-2023
+        // return $subPO;
         $oqcvirs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
             $query->where('status', 1);
         },'prod_runcard_accessory_info','tspts_oqcvir_info' => function($query){
             $query->orderBy('created_at','desc');
         },'tspts_oqcvir_info.inspector_info'])
         ->where('po_no', $subPO)
-        ->whereNull('deleted_at')
+        // ->whereNull('deleted_at')
         ->where('status',4)
         ->get();
 
-        // return $oqcvirs;
+        return $oqcvirs;
 
 
 
@@ -2396,7 +2397,6 @@ Packing Doc. #: ' . $doc_list
                 }else{
                     $result .= ' <button type="button" class="btn btn-sm btn-primary btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
 
-                }else{
                     if( $packing->id_first_data == 0 ){
                         $result .= ' <button type="button" class="btn btn-sm btn-warning btnPrintFinalQRCode" data-toggle="modal" data-target="#modal_Final_Packing_QRcode" lotapp-id="'.$packing->id.'"><i class="fa fa-print"></i></button>';
                     }else{
