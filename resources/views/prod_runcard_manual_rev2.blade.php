@@ -108,6 +108,13 @@
  -->                      <input type="text" class="form-control" id="txt_po_number_lbl" style="text-transform:uppercase" >
                     </div>
                   </div>
+                 <div class="col-sm-3">
+                    <label>YEC PO Number</label>
+                    <div class="input-group">
+                        <select type="text" class="form-control select2 select2bs4" id="txt_yec_po_number_lbl">
+                        </select>
+                    </div>
+                  </div>
 
                   <div class="col-sm-3">
                     <label>Device Name</label>
@@ -2337,7 +2344,10 @@
 
     })
 
-    /* MIGZ 05-28-24 Validate User & Edit Lot No */
+    /* Validate User & Edit Lot No */
+
+    // txt_po_number_lbl
+// txt_yec_po_number_lbl
     function editProdnLotNo(){
         $.ajax({
             type: "POST",
@@ -2612,8 +2622,26 @@
     // });
     $('#txt_po_number_lbl').keypress(function(e){
         if(e.keyCode == 13){
-            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val());
-          // $('#txt_po_number_lbl').val();
+            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val(),$('#txt_yec_po_number_lbl').val())
+        //   // $('#txt_po_number_lbl').val();
+        //   $.ajax({
+        //             type: "get",
+        //             url: "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ppts_f3.php",
+        //             // url: "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ts.php",
+        //             data: {
+        //                 'po' : $('#txt_po_number_lbl').val(),
+        //             },
+        //             dataType: "json",
+        //             beforeSend: function(){
+
+        //             },
+        //             success: function (response) {
+        //                 console.log('sadsad',response);
+
+        //             }
+
+        //         });
+        re_initialize_select2_server_side('#txt_yec_po_number_lbl','',[],'');
 
           $(this).val( $(this).val().split(' ')[0] )
           arrSelectedRuncards = [];
@@ -7350,6 +7378,8 @@ function OutputDataCounter(api) {
         });
       }
 
+
+                    // url: "http://rapid/NAAYES/api/ypics_po_details_for_dlabel.php",
       function save_approve_qc(){
         var data = 'txt_prod_runcard_id_query=' + $("#txt_prod_runcard_id_query").val()+'&txt_employee_number_scanner=' + $("#txt_employee_number_scanner").val() + '&_token=' + '{{ csrf_token() }}';
 

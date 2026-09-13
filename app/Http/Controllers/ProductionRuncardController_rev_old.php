@@ -3186,7 +3186,7 @@ class ProductionRuncardController_rev extends Controller
     public function get_wbs_material_kitting_rev(Request $request){ //WORKING FUNCTION
         // return 'WORKING FUNCTION';
         date_default_timezone_set('Asia/Manila');
-        $material_kitting = MaterialIssuanceSubSystem::with([
+      return   $material_kitting = MaterialIssuanceSubSystem::with([
                                             'device_info',
                                             'documents_details',
                                             'material_issuance_details' => function($query){

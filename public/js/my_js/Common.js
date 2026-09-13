@@ -3,6 +3,109 @@ let imgResultQrCode = '';
 let qrCodeTitle = '';
 let genQRCodeName = '';
 
+    //re_initialize_select2_server_side('#'+mdl_prdn_new+' #prdn_first_take_trained_by','#'+mdl_prdn_new+' #'+frm_prdn_new,[],"server_side_scripts/dropdown/common/dd_hris_all_list.php");
+
+function re_initialize_select2_server_side(combo_id,dropdown_parent='',data_value,ajax_url){
+	if($(combo_id).hasClass('select2-hidden-accessible')){
+		$(combo_id).select2('destroy');
+	}
+
+	$(combo_id).select2({
+        // theme: 'bootstrap-4',
+		dropdownParent	: $(dropdown_parent),
+		minimumInputLength: 2,
+		// triggerChange: true,
+		// allowClear: true,
+		placeholder: {
+			id: "",
+			placeholder: "Leave blank to ..."
+		},
+		ajax: {
+		url: "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ppts_f3.php",
+			dataType: 'json',
+			delay: 100,
+			data: function (params) {
+				return {
+					q: params.term || '', // common search parameter
+					term: params.term || '', // fallback for APIs expecting term
+					po: params.term || '' // fallback for PO look-up APIs (e.g. ypics_po_details_for_dlabel_*.php)
+				};
+			},
+			processResults: function (data) {
+
+                let parsedData = data;
+                console.log('Parsed Data:', parsedData);
+                return;
+				if(typeof parsedData === 'string'){
+					try{
+						parsedData = JSON.parse(parsedData);
+					}
+					catch(err){
+						parsedData = [];
+					}
+				}
+
+				let items = [];
+
+				// Handle PO look-up API shape: { po_details: [ { wbs_kitting: {...} } | { yeu_kitting: {...} } ] }
+				if(parsedData && Array.isArray(parsedData.po_details)){
+					items = parsedData.po_details.map(function(detail){
+						let info = (detail && (detail.wbs_kitting || detail.yeu_kitting)) || {};
+						let poNo = info.po_no || info.po || '';
+						let deviceName = info.device_name || info.product_name || '';
+						return {
+							id: poNo,
+							text: deviceName ? (poNo + ' - ' + deviceName) : poNo
+						};
+					}).filter(function(item){
+						return item.id !== '' && item.id !== null && item.id !== undefined;
+					});
+				}
+				else if(Array.isArray(parsedData)){
+					items = parsedData;
+				}
+				else if(parsedData && Array.isArray(parsedData.results)){
+					items = parsedData.results;
+				}
+				else if(parsedData && typeof parsedData === 'object'){
+					items = Object.keys(parsedData).map(function(key){
+						return {
+							id: key,
+							text: parsedData[key]
+						};
+					});
+				}
+
+				const normalized = items.map(function(item){
+					if(item && typeof item === 'object'){
+						if(item.id !== undefined && item.text !== undefined){
+							return item;
+						}
+						const id = item.id || item.value || item.po_no || item.po || item.code || item.text || '';
+						const text = item.text || item.label || item.name || item.po_no || item.po || item.device_name || id;
+						return {
+							id: id,
+							text: text
+						};
+					}
+
+					return {
+						id: item,
+						text: item
+					};
+				}).filter(function(item){
+					return item.id !== '' && item.id !== null && item.id !== undefined;
+				});
+
+				return {
+					results: normalized
+				};
+			},
+			cache: true
+		}
+	});
+}
+
 $(document).ready(function(){
 	$(document).on('click', '.aGenerateBarcode', function(){
 		let barcode = $(this).attr('barcode');

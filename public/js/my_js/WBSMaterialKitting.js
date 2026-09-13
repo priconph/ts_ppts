@@ -30,7 +30,7 @@ function GetMaterialKittingList(cboElement){
     });
 }
 
-function GetMaterialKittingListByPoNo(cboElement, poNo){
+function GetMaterialKittingListByPoNo(cboElement, poNo,yecPoNo = null){
     let result = '<option value="">N/A</option>';
     $.ajax({
         url: 'get_wbs_kitting_details_by_po_no',
@@ -38,6 +38,7 @@ function GetMaterialKittingListByPoNo(cboElement, poNo){
         dataType: 'json',
         data: {
             po_no: poNo,
+            yec_po_no: yecPoNo,
         },
         beforeSend: function(){
             result = '<option disabled value=""> -- Loading -- </option>';
@@ -57,26 +58,6 @@ function GetMaterialKittingListByPoNo(cboElement, poNo){
                     if(index <= 0){
                         usage = JsonObject['kitting_details'][index].usage;
                         issuedQty = JsonObject['kitting_details'][index].issued_qty;
-                    }
-                }
-
-                for(let index = 0; index < JsonObject['yeu_kitting_details'].length; index++){
-                    result += '<option data-code="' + JsonObject['yeu_kitting_details'][index].item_code + '" item-desc="' + JsonObject['yeu_kitting_details'][index].item_name + '" usage="' + JsonObject['yeu_kitting_details'][index].usg + '" issued-qty="' + JsonObject['yeu_kitting_details'][index].qty + '" value="' + JsonObject['yeu_kitting_details'][index].item_code + '--' + JsonObject['yeu_kitting_details'][index].item_name + '--' + JsonObject['yeu_kitting_details'][index].id + '" ' + '>' + JsonObject['yeu_kitting_details'][index].item_name + '</option>';
-                    if(index <= 0){
-                        usage = JsonObject['yeu_kitting_details'][index].usg;
-                        issuedQty = JsonObject['yeu_kitting_details'][index].qty;
-                    }
-                }
-
-            }
-            else if(JsonObject['kitting_details'].length === 0 && JsonObject['yeu_kitting_details'].length > 0){
-                console.log('JsonObject',JsonObject['yeu_kitting_details']);
-
-                for(let index = 0; index < JsonObject['yeu_kitting_details'].length; index++){
-                    result += '<option data-code="' + JsonObject['yeu_kitting_details'][index].item_code + '" item-desc="' + JsonObject['yeu_kitting_details'][index].item_name + '" usage="' + JsonObject['yeu_kitting_details'][index].usg + '" issued-qty="' + JsonObject['yeu_kitting_details'][index].qty + '" value="' + JsonObject['yeu_kitting_details'][index].item_code + '--' + JsonObject['yeu_kitting_details'][index].item_name + '--' + JsonObject['yeu_kitting_details'][index].id + '" ' + '>' + JsonObject['yeu_kitting_details'][index].item_name + '</option>';
-                    if(index <= 0){
-                        usage = JsonObject['yeu_kitting_details'][index].usg;
-                        issuedQty = JsonObject['yeu_kitting_details'][index].qty;
                     }
                 }
             }
