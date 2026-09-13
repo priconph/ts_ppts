@@ -3223,6 +3223,7 @@ class ProductionRuncardController_rev extends Controller
             ->orderBy('id', 'ASC')
             ->first();
 
+            $device_info = Device::where('name', $request->device_name)->first();
 
             $device_name_print = 'not found';
             $device_name_print = $material_kitting->product_name;
@@ -3245,18 +3246,6 @@ class ProductionRuncardController_rev extends Controller
         // $doc_o_drawing_query = [];
         $doc_jrdjksdcgj_drawing_query = [];
         $doc_gpmd_drawing_query = [];
-
-        // if ($device_name_print == null) {
-        //     // return 'qwe';
-        //     $device_name_print = $material_kitting->item_name;
-        // }else{
-        //     // return 'asd';
-        // }
-
-        //   return $device_name_print;
-
-        // return gettype($device_name_print);
-        // return $material_kitting->device_name;
 
         //TODO: MIGZ 09-04-24 Remove extension (Ex. Burn-in & Test), if the Device Name not match in WBS Issuance & Kitting
         //TODO: NOTE: Burn in Memory is include only in searching Series Name in ACDCS

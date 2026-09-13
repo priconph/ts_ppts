@@ -108,10 +108,10 @@
  -->                      <input type="text" class="form-control" id="txt_po_number_lbl" style="text-transform:uppercase" >
                     </div>
                   </div>
-                 <div class="col-sm-3 class_txt_yec_po_number_lbl d-none">
+                 <div class="col-sm-3 class_row_txt_yec_po_number_lbl">
                     <label>YEC PO Number</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="txt_yec_po_number_lbl" list="list_txt_yec_po_number_lbl" autocomplete="off" style="text-transform:uppercase" placeholder="Type PO # to search">
+                        <input type="text" class="form-control class_yec_po_number_lbl" id="txt_yec_po_number_lbl" list="list_txt_yec_po_number_lbl" autocomplete="off" style="text-transform:uppercase" placeholder="Type PO # to search">
                         <datalist class="class_dl_yec_po_number_lbl" id="list_txt_yec_po_number_lbl"></datalist>
                     </div>
                   </div>
@@ -2611,10 +2611,9 @@
   }
 
 
-    //-----
   $("#txt_yec_po_number_lbl").keyup(function (e) {
         if(e.keyCode == 13){
-            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val(),$('#list_txt_yec_po_number_lbl').val())
+            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val(),$('.class_dl_yec_po_number_lbl').val())
         }
   });
     $(document).ready(function () {
@@ -2634,14 +2633,13 @@
             let hasPO = trimPoNo.toUpperCase().includes("PO");
 
             GetMaterialKittingListByPoNo($(".selAccessoryName"), currentPoNo,$('#txt_yec_po_number_lbl').val())
-            $('.class_txt_yec_po_number_lbl').addClass('d-none');
-            if (hasPO) {
-                // PO16513
-                $('.class_txt_yec_po_number_lbl').removeClass('d-none');
-            }   
+            // $('.class_row_txt_yec_po_number_lbl').addClass('d-none');
+            // if (hasPO) {
+                // $('.class_row_txt_yec_po_number_lbl').removeClass('d-none');
+            // }   
 
-            $('#txt_yec_po_number_lbl').val('');
-            $('#list_txt_yec_po_number_lbl').html('');
+            $('.class_yec_po_number_lbl').val('');
+            $('.class_dl_yec_po_number_lbl').html('');
 
           $(this).val( $(this).val().split(' ')[0] )
           arrSelectedRuncards = [];
@@ -5497,12 +5495,12 @@
       });
 
       //YEC PO Number (external API datalist)
-      $("#list_txt_yec_po_number_lbl").on("keyup", function(e){
+      $(".class_yec_po_number_lbl").on("keyup", function(e){
         var thiss = $(this);
         var poNo   = $(this).val().trim();
 
         if(poNo.length < 2){
-          $("#list_txt_yec_po_number_lbl").html('');
+          $(".class_yec_po_number_lbl").html('');
           return;
         }
 
@@ -5537,7 +5535,7 @@
       });
 
       //WI Doc
-      $(".class_txt_WIDoc").on("keyup", function(e){
+      $(".class_txt_WIDoc").on("keyup", function(e){ //nmodify
         var parent        = $(this).closest(".row_container");
         var data = {
           "action"          : "get_WIDoc",
