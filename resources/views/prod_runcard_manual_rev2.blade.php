@@ -111,8 +111,8 @@
                  <div class="col-sm-3">
                     <label>YEC PO Number</label>
                     <div class="input-group">
-                        <select type="text" class="form-control select2 select2bs4" id="txt_yec_po_number_lbl">
-                        </select>
+                        <input type="text" class="form-control class_txt_yec_po_number_lbl" id="txt_yec_po_number_lbl" list="list_txt_yec_po_number_lbl" autocomplete="off" style="text-transform:uppercase" placeholder="Type PO # to search">
+                        <datalist class="class_dl_yec_po_number_lbl" id="list_txt_yec_po_number_lbl"></datalist>
                     </div>
                   </div>
 
@@ -2641,7 +2641,8 @@
         //             }
 
         //         });
-        re_initialize_select2_server_side('#txt_yec_po_number_lbl','',[],'');
+        $('#txt_yec_po_number_lbl').val('');
+          $('#list_txt_yec_po_number_lbl').html('');
 
           $(this).val( $(this).val().split(' ')[0] )
           arrSelectedRuncards = [];
@@ -5495,6 +5496,46 @@
         }else{
             $('#o_revision').val('N/A');
         }
+      });
+
+      //YEC PO Number (external API datalist)
+      $(".class_txt_yec_po_number_lbl").on("keyup", function(e){
+        var thiss = $(this);
+        var poNo   = $(this).val().trim();
+
+        if(poNo.length < 2){
+          $(".class_dl_yec_po_number_lbl").html('');
+          return;
+        }
+
+        $.ajax({
+            type      : "get",
+            dataType  : "json",
+            data      : { po: poNo },
+            url       : "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ppts_f3.php",
+          success       : function(data){
+
+            var list = "";
+
+            if(data && Array.isArray(data['po_details'])){
+              for(var ctr = 0; ctr < data['po_details'].length; ctr++){
+                var detail     = data['po_details'][ctr] || {};
+                var info       = detail.wbs_kitting || detail.yeu_kitting || {};
+                var poNoResult = info.po_no || '';
+                var deviceName = info.device_name || info.product_name || '';
+
+                if(poNoResult){
+                  list += "<option value='"+poNoResult+"' data-device-name='"+deviceName+"'>"+poNoResult+(deviceName ? ' - '+deviceName : '')+"</option>";
+                }
+              }
+            }
+
+            $(".class_dl_yec_po_number_lbl").html(list);
+          },
+          error         : function(){
+            $(".class_dl_yec_po_number_lbl").html('');
+          }
+        });
       });
 
       //WI Doc
