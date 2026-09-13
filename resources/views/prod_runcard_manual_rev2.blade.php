@@ -108,10 +108,10 @@
  -->                      <input type="text" class="form-control" id="txt_po_number_lbl" style="text-transform:uppercase" >
                     </div>
                   </div>
-                 <div class="col-sm-3">
+                 <div class="col-sm-3 class_txt_yec_po_number_lbl d-none">
                     <label>YEC PO Number</label>
                     <div class="input-group">
-                        <input type="text" class="form-control class_txt_yec_po_number_lbl" id="txt_yec_po_number_lbl" list="list_txt_yec_po_number_lbl" autocomplete="off" style="text-transform:uppercase" placeholder="Type PO # to search">
+                        <input type="text" class="form-control" id="txt_yec_po_number_lbl" list="list_txt_yec_po_number_lbl" autocomplete="off" style="text-transform:uppercase" placeholder="Type PO # to search">
                         <datalist class="class_dl_yec_po_number_lbl" id="list_txt_yec_po_number_lbl"></datalist>
                     </div>
                   </div>
@@ -2612,7 +2612,11 @@
 
 
     //-----
-
+  $("#txt_yec_po_number_lbl").keyup(function (e) {
+        if(e.keyCode == 13){
+            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val(),$('#list_txt_yec_po_number_lbl').val())
+        }
+  });
     $(document).ready(function () {
 
     // $('#txt_po_number_lbl').keyup(function (e) { //nmodify
@@ -2622,34 +2626,28 @@
     // });
     $('#txt_po_number_lbl').keypress(function(e){
         if(e.keyCode == 13){
-            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val(),$('#txt_yec_po_number_lbl').val())
-        //   // $('#txt_po_number_lbl').val();
-        //   $.ajax({
-        //             type: "get",
-        //             url: "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ppts_f3.php",
-        //             // url: "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ts.php",
-        //             data: {
-        //                 'po' : $('#txt_po_number_lbl').val(),
-        //             },
-        //             dataType: "json",
-        //             beforeSend: function(){
+            currentPoNo = $(this).val();
 
-        //             },
-        //             success: function (response) {
-        //                 console.log('sadsad',response);
+           let trimPoNo = currentPoNo ? currentPoNo.toString().trim() : '';
 
-        //             }
+            // Case-insensitive check for "PO"
+            let hasPO = trimPoNo.toUpperCase().includes("PO");
 
-        //         });
-        $('#txt_yec_po_number_lbl').val('');
-          $('#list_txt_yec_po_number_lbl').html('');
+            GetMaterialKittingListByPoNo($(".selAccessoryName"), currentPoNo,$('#txt_yec_po_number_lbl').val())
+            $('.class_txt_yec_po_number_lbl').addClass('d-none');
+            if (hasPO) {
+                // PO16513
+                $('.class_txt_yec_po_number_lbl').removeClass('d-none');
+            }   
+
+            $('#txt_yec_po_number_lbl').val('');
+            $('#list_txt_yec_po_number_lbl').html('');
 
           $(this).val( $(this).val().split(' ')[0] )
           arrSelectedRuncards = [];
           $("#btnOverallInspection").prop('disabled', true);
           $("#btnReference").prop('disabled', false);
           $(".spanOICount").html('');
-          currentPoNo = $(this).val();
           dt_prod_runcard.draw();
           $('#tbl_materials tbody tr').removeClass('table-active');
           // $('#txt_po_number_lbl').val('');
@@ -5499,12 +5497,12 @@
       });
 
       //YEC PO Number (external API datalist)
-      $(".class_txt_yec_po_number_lbl").on("keyup", function(e){
+      $("#list_txt_yec_po_number_lbl").on("keyup", function(e){
         var thiss = $(this);
         var poNo   = $(this).val().trim();
 
         if(poNo.length < 2){
-          $(".class_dl_yec_po_number_lbl").html('');
+          $("#list_txt_yec_po_number_lbl").html('');
           return;
         }
 
