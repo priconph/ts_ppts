@@ -3186,7 +3186,7 @@ class ProductionRuncardController_rev extends Controller
     public function get_wbs_material_kitting_rev(Request $request){ //WORKING FUNCTION
         // return 'WORKING FUNCTION';
         date_default_timezone_set('Asia/Manila');
-      return   $material_kitting = MaterialIssuanceSubSystem::with([
+        $material_kitting = MaterialIssuanceSubSystem::with([
                                             'device_info',
                                             'documents_details',
                                             'material_issuance_details' => function($query){
@@ -3196,39 +3196,18 @@ class ProductionRuncardController_rev extends Controller
                                         ->orderby('id', 'desc')
                                         ->where('po_no', $request->po_number)
                                         ->first();
-        // return $material_kitting;
 
         // return $material_kitting;
         // return 'asd';
         if(is_null($material_kitting)){
-            // return 'tist';
-            $material_kitting = YeuKitting::with([
-                'device_info',
-                // // 'prod_runcard_station_many_details' => function($query){
-                // //     $query->orderBy('step_num', 'desc');
-                // //     $query->where('status', 1);
-                // //     // $query->first();
-                // //     // $query->limit(1);
-                // // },
-                // 'prod_runcard_station_many_details' => function($query){
-                //     // $query->where('has_emboss', '!=', 1);
-                //     $query->where('status', 1);
-                //     $query->orderBy(\DB::raw('CONVERT(SUBSTRING_INDEX(step_num,"-", 1), UNSIGNED INTEGER)', 'ASC'));
-                //     $query->orderBy(\DB::raw('right(step_num,LOCATE("-",step_num) - 1)', 'ASC'));
-                //     // $query->limit(1);
-                // },
-            ])
-            ->where('po_no', $request->po_number)
-            ->where('product_name', '<>', NULL)
-            ->orderBy('id', 'ASC')
-            ->first();
 
             $device_info = Device::where('name', $request->device_name)->first();
 
             $device_name_print = 'not found';
-            $device_name_print = $material_kitting->product_name;
+            $device_name_print = $request->product_name;
             // $material_kitting->device_code = $material_kitting->item_code; // CHRIS 03-30-2026
-            $material_kitting->device_code = $material_kitting->device_info->barcode ?? $material_kitting->item_code; // CHRIS 03-30-2026
+            // $material_kitting->device_code = $request->device_info->barcode ?? $material_kitting->item_code; // CHRIS 03-30-2026
+            $material_kitting = ['po_number'=> $request->po_number];
         }else{
             $device_name_print = 'not found';
             $device_name_print = $material_kitting->device_name;
@@ -3315,7 +3294,7 @@ class ProductionRuncardController_rev extends Controller
             }
 
             //-Nessa
-            if($material_kitting->count() > 0){
+            if($material_kitting){
                 $po_no = QrCode::format('png')
                                 ->size(200)->errorCorrection('H')
                                 ->generate($request->po_number);

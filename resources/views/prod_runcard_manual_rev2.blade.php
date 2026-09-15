@@ -108,7 +108,7 @@
  -->                      <input type="text" class="form-control" id="txt_po_number_lbl" style="text-transform:uppercase" >
                     </div>
                   </div>
-                 <div class="col-sm-3 class_row_txt_yec_po_number_lbl">
+                 <div class="col-sm-3 class_row_txt_yec_po_number_lbl d-none">
                     <label>YEC PO Number</label>
                     <div class="input-group">
                         <input type="text" class="form-control class_yec_po_number_lbl" id="txt_yec_po_number_lbl" list="list_txt_yec_po_number_lbl" autocomplete="off" style="text-transform:uppercase" placeholder="Type PO # to search">
@@ -2414,7 +2414,7 @@
     $('#formEditProdnLotNo').submit(function (e) {
          e.preventDefault();
         $("#txtSearchPoTransLotNo").val('');
-        $("#scanPOTransLotBody").text('Please Scan the Superior ID.'); //nmodify
+        $("#scanPOTransLotBody").text('Please Scan the Superior ID.');
         $('#modalScanPOTransLotCode').attr('data-formid', 'scan_employee_no_for_edit_runcard_lotno').modal('show');
         $("#txtScannedEmployeeNo").val('');
     });
@@ -2627,16 +2627,16 @@
         if(e.keyCode == 13){
             currentPoNo = $(this).val();
 
-           let trimPoNo = currentPoNo ? currentPoNo.toString().trim() : '';
+            let trimPoNo = currentPoNo ? currentPoNo.toString().trim() : '';
 
             // Case-insensitive check for "PO"
             let hasPO = trimPoNo.toUpperCase().includes("PO");
 
             GetMaterialKittingListByPoNo($(".selAccessoryName"), currentPoNo,$('#txt_yec_po_number_lbl').val())
-            // $('.class_row_txt_yec_po_number_lbl').addClass('d-none');
-            // if (hasPO) {
-                // $('.class_row_txt_yec_po_number_lbl').removeClass('d-none');
-            // }   
+            $('.class_row_txt_yec_po_number_lbl').addClass('d-none');
+            if (hasPO) {
+                $('.class_row_txt_yec_po_number_lbl').removeClass('d-none');
+            }
 
             $('.class_yec_po_number_lbl').val('');
             $('.class_dl_yec_po_number_lbl').html('');
@@ -3701,7 +3701,7 @@
 
             // Temporary -> switch comment
             console.log('before');
-            GetMaterialKitting();
+            GetMaterialKitting(); //nmodify
             console.log('after');
             // GetSakidashiIssuance();
             // if(api.rows().count() <= 0){
@@ -5279,7 +5279,7 @@
               $("#txt_material_lot_no_lbl").val("");
               $("#txt_sakidashi_lot_no_lbl").val("");
               // dt_materials.draw();
-              GetMaterialKitting();
+              GetMaterialKitting(); //nmodify
               // GetSakidashiIssuance();
 
               GetDrawingNo($(".drawing_no"));
@@ -5512,20 +5512,26 @@
           success       : function(data){
 
             var list = "";
-
-            if(data && Array.isArray(data['po_details'])){
-              for(var ctr = 0; ctr < data['po_details'].length; ctr++){
-                var detail     = data['po_details'][ctr] || {};
-                var info       = detail.wbs_kitting || detail.yeu_kitting || {};
-                var poNoResult = info.po_no || '';
-                var deviceName = info.device_name || info.product_name || '';
-
-                if(poNoResult){
-                  list += "<option value='"+poNoResult+"' data-device-name='"+deviceName+"'>"+poNoResult+(deviceName ? ' - '+deviceName : '')+"</option>";
+                if (data.length > 0) {
+                    for(var ctr = 0; ctr < data.length; ctr++){
+                        // var detail     = data['po_details'][ctr] || {};
+                        // var info       = detail.wbs_kitting || detail.yeu_kitting || {};
+                        // var poNoResult = info.po_no || '';
+                        // var deviceName = info.device_name || info.product_name || '';
+                        let deviceInfo = data[ctr];
+                        // if (Object.keys(deviceInfo).length > 0) {
+                        //     // Runs only if data[0] existed and had properties
+                        //     // console.log("Data exists:", deviceInfo);
+                        //     $("#txt_po_number_lbl").val(deviceInfo['po_no']);
+                        //     $("#txt_device_name_lbl").val(deviceInfo['device_name']);
+                        //     $("#txt_device_code_lbl").val(deviceInfo['device_code']);
+                        //     $("#txt_po_qty_lbl").val(deviceInfo['po_qty']);
+                        // }
+                    
+                        list += "<option value='"+deviceInfo['po_no']+"' data-device-name='"+deviceInfo['device_name']+"'>"+deviceInfo['po_no']+(deviceInfo['device_name'] ? ' - '+deviceInfo['device_name'] : '')+"</option>";
+                        // }
+                    }
                 }
-              }
-            }
-
             $(".class_dl_yec_po_number_lbl").html(list);
           },
           error         : function(){
@@ -5552,10 +5558,10 @@
 
             var list    = "";
 
-             list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            list+="<option value='N/A' data-revision='N/A' >N/A</option>";
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
 
@@ -5603,14 +5609,24 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+            //     list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+            //   }
+            // }
+
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
+            //   }
+            // }
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
-
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
-
              console.log(data['doc'])
 
             $(parent).find(".class_dl_OGM_VIG_IGDoc").html(list);
@@ -5655,14 +5671,16 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+            //   }
+            // }
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
-
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
-
              console.log(data['doc'])
 
             $(parent).find(".class_dl_PPDoc").html(list);
@@ -5707,14 +5725,20 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
-            if ($.trim(data['doc'])){
-              for(var ctr=0;ctr<data['doc'].length;ctr++){
-                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
 
-              }
-            }
+            //   }
+            // }
 
              console.log(data['doc'])
+
+            if ($.trim(data['doc'])){
+              for(var ctr=0;ctr<data['doc'].length;ctr++){
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
+              }
+            }
 
             $(parent).find(".class_dl_UDDoc").html(list);
           }
@@ -5757,7 +5781,7 @@
 
             var list    = "";
 
-             list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            list+="<option value='N/A' data-revision='N/A' >N/A</option>";
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
                 list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
@@ -7451,116 +7475,154 @@ function OutputDataCounter(api) {
         });
       }
 
-    function GetMaterialKitting(){
-      $.ajax({
-        url: "get_wbs_material_kitting_rev",
-        method: 'get',
-        dataType: 'json',
-        data: {
-          po_number: currentPoNo
-        },
-        beforeSend: function(){
-          boxing = "";
-          assessment = "";
-          aDrawing = "";
-          aDrawingRev = "";
-          gDrawing = "";
-          gDrawingRev = "";
-        },
-        success: function(data){
-            if(data['material_kitting'] != null){
-            $("#txt_po_number_lbl").val(data['material_kitting']['po_no']);
-            $("#img_barcode_PO").attr('src', data['po_no_qr']);
+    function GetMaterialKitting(){ //nmodify
 
-            // $("#txt_device_name_lbl").val(data['material_kitting']['device_name']); // commented by JD 04-13-2024
-            if(data['material_kitting']['device_info'] != null){
+        let trimPoNo = currentPoNo ? currentPoNo.toString().trim() : '';
 
-              $("#txt_device_name_lbl").val(data['material_kitting']['device_info']['name']); // commented 04-08-2024 by Nessa
-              $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
-              $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
-              if(data['material_kitting']['po_no'] == 'PO16317'){
-                $("#txt_device_code_lbl").val(data['material_kitting']['device_info']['barcode']);
-              }else{
-                $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
-              }
-            }else{
-            //   alert('Please CHECK/ADD to the matrix');
-              // mdr 09/17/2025
+        // Case-insensitive check for "PO"
+        let hasPO = trimPoNo.toUpperCase().includes("PO");
+        if(hasPO) {
+             $.ajax({
+                type      : "get",
+                dataType  : "json",
+                data      : { po: currentPoNo },
+                url       : "http://rapid/NAAYES/api/ypics_po_details_for_dlabel_ppts_f3.php",
+                success       : function(data){
+                    let deviceInfo = data[0] || {};
+                    if (Object.keys(deviceInfo).length > 0) {
+                        // Runs only if data[0] existed and had properties
+                        // console.log("Data exists:", deviceInfo);
+                        $("#txt_po_number_lbl").val(deviceInfo['po_no']);
+                        $("#txt_device_name_lbl").val(deviceInfo['device_name']);
+                        $("#txt_device_code_lbl").val(deviceInfo['device_code']);
+                        $("#txt_po_qty_lbl").val(deviceInfo['po_qty']);
+                    }else{
+                        $("#txt_po_number_lbl").val('');
+                        $("#txt_device_name_lbl").val('');
+                        $("#txt_device_code_lbl").val('');
+                        $("#txt_po_qty_lbl").val('');
+                        $("#txt_lot_qty").val('');
 
-              $("#txt_device_name_lbl").val(data['material_kitting']['product_name']);
-              $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
-                alert(data['material_kitting']['po_no'])
+                        $('#txt_orig_Adrawing').val('');
+                        $('#txt_orig_Adrawing_rev').val('');
+                        $('#txt_Adrawing').val('');
+                        $('#txt_Adrawing_rev').val('');
+                        $('#txt_Gdrawing').val('');
+                        $('#txt_Gdrawing_rev').val('');
+                        $('#txt_JRDJKSDCGJDoc').val('');
+                        $('#txt_JRDJKSDCGJDoc_rev').val('');
+                        $('#txt_GPMD').val('');
+                        $('#txt_GPMD_rev').val('');
+                    }
+                },
+                error         : function(){
+                   alert('No Data Found!')
+                }
+            });
+        }
 
-            }
+    setTimeout(function(){
+        $.ajax({
+            url: "get_wbs_material_kitting_rev",
+            method: 'get',
+            dataType: 'json',
+            data: {
+            po_number: currentPoNo,
+            product_name: $("#txt_device_name_lbl").val(),
+            },
+            beforeSend: function(){
+            boxing = "";
+            assessment = "";
+            aDrawing = "";
+            aDrawingRev = "";
+            gDrawing = "";
+            gDrawingRev = "";
+            },
+            success: function(data){
+                if(data['material_kitting'] != null || data['material_kitting'] != undefined){
+                    let trimPoNo = currentPoNo ? currentPoNo.toString().trim() : '';
 
+                    // Case-insensitive check for "PO"
+                    let hasPO = trimPoNo.toUpperCase().includes("PO");
+                    if(!hasPO) {
+                        $("#txt_po_number_lbl").val(data['material_kitting']['po_no']);
+                        $("#img_barcode_PO").attr('src', data['po_no_qr']);
 
-            $('#lbl_device_name').attr('device_name_print', data['device_name_print'] );
+                        // $("#txt_device_name_lbl").val(data['material_kitting']['device_name']); // commented by JD 04-13-2024
+                        if(data['material_kitting']['device_info'] != null){
 
-            if (data['a_drawing'] == '' ){
-              $("#txt_Adrawing").val('N/A');
-              $("#txt_Adrawing_rev").val('N/A');
-              $('.btnSearchADrawing').prop('disabled', true);
-            }else{
-              $("#txt_Adrawing").val(data['a_drawing'][0]['doc_no']);
-              $("#txt_Adrawing_rev").val(data['a_drawing'][0]['rev_no']);
-              $("#txt_Adrawing_fkid_document").val(data['a_drawing'][0]['fkid_document']);
-            }
+                            $("#txt_device_name_lbl").val(data['material_kitting']['device_info']['name']); // commented 04-08-2024 by Nessa
+                            $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
+                            $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
+                            if(data['material_kitting']['po_no'] == 'PO16317'){
+                                $("#txt_device_code_lbl").val(data['material_kitting']['device_info']['barcode']);
+                            }else{
+                                $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
+                            }
+                        }else{
+                
+                        $("#txt_device_name_lbl").val(data['material_kitting']['product_name']);
+                        $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
+                            alert(data['material_kitting']['po_no'])
 
-            if (data['orig_a_drawing'] == '' ){
-              $("#txt_orig_Adrawing").val('N/A');
-              $("#txt_orig_Adrawing_rev").val('N/A');
-              $('.btnSearchOrigADrawing').prop('disabled', true);
-            }else{
-              $("#txt_orig_Adrawing").val(data['orig_a_drawing'][0]['doc_no']);
-              $("#txt_orig_Adrawing_rev").val(data['orig_a_drawing'][0]['rev_no']);
-              $("#txt_orig_Adrawing_fkid_document").val(data['orig_a_drawing'][0]['fkid_document']);
-            }
+                        }
 
-            if (data['g_drawing'] == ''){
-              $("#txt_Gdrawing").val('N/A');
-              $("#txt_Gdrawing_rev").val('N/A');
-              $('.btnSearchGDrawing').prop('disabled', true);
-            }else{
-              $("#txt_Gdrawing").val(data['g_drawing'][0]['doc_no']);
-              $("#txt_Gdrawing_rev").val(data['g_drawing'][0]['rev_no']);
-              $("#txt_Gdrawing_fkid_document").val(data['g_drawing'][0]['fkid_document']);
-            }
+                        $('#lbl_device_name').attr('device_name_print', data['device_name_print'] );
+                    }
+                    
 
-            // if (data['o_drawing'] == ''){
-            //   $("#txt_Odrawing").val('N/A');
-            //   $("#txt_Odrawing_rev").val('N/A');
-            //   $('.btnSearchODrawing').prop('disabled', true);
-            // }else{
-            //   $("#txt_Odrawing").val(data['o_drawing'][0]['doc_no']);
-            //   $("#txt_Odrawing_rev").val(data['o_drawing'][0]['rev_no']);
-            // }
+                    if (data['a_drawing'] == '' ){
+                    $("#txt_Adrawing").val('N/A');
+                    $("#txt_Adrawing_rev").val('N/A');
+                    $('.btnSearchADrawing').prop('disabled', true);
+                    }else{
+                    $("#txt_Adrawing").val(data['a_drawing'][0]['doc_no']);
+                    $("#txt_Adrawing_rev").val(data['a_drawing'][0]['rev_no']);
+                    $("#txt_Adrawing_fkid_document").val(data['a_drawing'][0]['fkid_document']);
+                    }
 
-            if (data['jrdjksdcgj_drawing'] == ''){
-              $("#txt_JRDJKSDCGJDoc").val('N/A');
-              $("#txt_JRDJKSDCGJDoc_rev").val('N/A');
-              $('.btnSearchJRDJKSDCGJ').prop('disabled', true);
-            }else{
-              $("#txt_JRDJKSDCGJDoc").val(data['jrdjksdcgj_drawing'][0]['doc_no']);
-              $("#txt_JRDJKSDCGJDoc_rev").val(data['jrdjksdcgj_drawing'][0]['rev_no']);
-            }
+                if (data['orig_a_drawing'] == '' ){
+                $("#txt_orig_Adrawing").val('N/A');
+                $("#txt_orig_Adrawing_rev").val('N/A');
+                $('.btnSearchOrigADrawing').prop('disabled', true);
+                }else{
+                $("#txt_orig_Adrawing").val(data['orig_a_drawing'][0]['doc_no']);
+                $("#txt_orig_Adrawing_rev").val(data['orig_a_drawing'][0]['rev_no']);
+                $("#txt_orig_Adrawing_fkid_document").val(data['orig_a_drawing'][0]['fkid_document']);
+                }
 
-            if (data['gpmd_drawing'] == ''){
-              $("#txt_GPMD").val('N/A');
-              $("#txt_GPMD_rev").val('N/A');
-              $('.btnSearchJRDJKSDCGJ').prop('disabled', true);
-            }else{
-              $("#txt_GPMD").val(data['gpmd_drawing'][0]['doc_no']);
-              $("#txt_GPMD_rev").val(data['gpmd_drawing'][0]['rev_no']);
-            }
+                if (data['g_drawing'] == ''){
+                $("#txt_Gdrawing").val('N/A');
+                $("#txt_Gdrawing_rev").val('N/A');
+                $('.btnSearchGDrawing').prop('disabled', true);
+                }else{
+                $("#txt_Gdrawing").val(data['g_drawing'][0]['doc_no']);
+                $("#txt_Gdrawing_rev").val(data['g_drawing'][0]['rev_no']);
+                $("#txt_Gdrawing_fkid_document").val(data['g_drawing'][0]['fkid_document']);
+                }
+                if (data['jrdjksdcgj_drawing'] == ''){
+                $("#txt_JRDJKSDCGJDoc").val('N/A');
+                $("#txt_JRDJKSDCGJDoc_rev").val('N/A');
+                $('.btnSearchJRDJKSDCGJ').prop('disabled', true);
+                }else{
+                $("#txt_JRDJKSDCGJDoc").val(data['jrdjksdcgj_drawing'][0]['doc_no']);
+                $("#txt_JRDJKSDCGJDoc_rev").val(data['jrdjksdcgj_drawing'][0]['rev_no']);
+                }
 
-            if(data['material_kitting']['device_info'] != null){
-              // $("#txt_lot_qty").val(data['material_kitting']['device_info']['boxing']);
-              boxing = data['material_kitting']['device_info']['boxing'];
-              // alert(boxing);
+                if (data['gpmd_drawing'] == ''){
+                $("#txt_GPMD").val('N/A');
+                $("#txt_GPMD_rev").val('N/A');
+                $('.btnSearchJRDJKSDCGJ').prop('disabled', true);
+                }else{
+                $("#txt_GPMD").val(data['gpmd_drawing'][0]['doc_no']);
+                $("#txt_GPMD_rev").val(data['gpmd_drawing'][0]['rev_no']);
+                }
+
+                if(data['material_kitting']['device_info'] != null){
+                boxing = data['material_kitting']['device_info']['boxing'];
             }
             else{
               boxing = "";
-              // $("#txt_lot_qty").val("");
             }
 
             if(data['material_kitting']['assessment'] != null){
@@ -7576,13 +7638,7 @@ function OutputDataCounter(api) {
             $("#txt_g_drawing_no").val(gDrawing);
             $("#txt_g_drawing_rev").val(gDrawingRev);
 
-            // materialKitTransferSlip = data['material_kitting']['issuance_no'];
-            // $("#txt_material_transfer_slip_lbl").val(materialKitTransferSlip);
-            // dt_materials.draw();
-
-            // $("#txt_lot_qty").val(boxing);
-          }
-          else{
+          }else{
 
             $("#txt_po_number_lbl").val('');
             $("#txt_device_name_lbl").val('');
@@ -7609,6 +7665,7 @@ function OutputDataCounter(api) {
           }
         }
       });
+      },1000)
     }
 
     function GetSakidashiIssuance(){
