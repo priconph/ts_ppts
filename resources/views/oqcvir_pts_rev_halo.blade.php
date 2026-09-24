@@ -59,7 +59,7 @@
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">OQC Inspection1111</li>
+            <li class="breadcrumb-item active">OQC Inspection</li>
           </ol>
         </div>
       </div>
@@ -1911,6 +1911,7 @@
             theme: 'bootstrap4'
           });
 
+
       dt_oqcvir = $('#tbl_oqcvir').DataTable({
           "processing"    : false,
           "serverSide"  : true,
@@ -1919,6 +1920,7 @@
             url: "load_oqcvir_pts_table",
                 data: function (param){
                     param.po_num = $('#id_po_no').val();
+                    // param.po_num = '450261314800010';
                 }
           },
 
@@ -2042,12 +2044,16 @@
 
             console.log(oqc_lotapp_po_no);
             if(oqc_lotapp_po_no == undefined){
+
                 alert('Invalid QR Code, Please try again !')
             }else{
+               $('#id_po_no').val(oqc_lotapp_po_no)
+                console.log('1', oqc_lotapp_po_no);
+                console.log('2', $('#id_po_no').val());
                 getWbsPoDetails(oqc_lotapp_po_no); //Common.js+
                 setTimeout(() => {
                     dt_oqcvir.draw();
-                }, 1000);
+                }, 300);
             }
         }
         } catch (error) {
@@ -2995,7 +3001,7 @@ $(document).on('keypress',function(e){
 
       if( e.keyCode == 13 && $('#txt_employee_id').val() !='' && ($('#txt_employee_id').val().length >= 4) ){
 
-          $('#modalSearchInspector').modal('hide');
+          $('#modalSearchInspector').modal('hide');e
 
           GetInspectorDetails($('#txt_employee_id').val());
 

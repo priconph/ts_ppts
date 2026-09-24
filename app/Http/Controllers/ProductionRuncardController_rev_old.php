@@ -3226,7 +3226,7 @@ class ProductionRuncardController_rev extends Controller
 
             $device_name_print = 'not found';
             $device_name_print = $material_kitting->product_name;
-            // $material_kitting->device_code = $material_kitting->item_code; // CHRIS 03-30-2026
+            $material_kitting->po_qty = $request->po_number ==='PO16917' ? '1320' : $material_kitting->po_qty; // CHRIS 03-30-2026
             $material_kitting->device_code = $material_kitting->device_info->barcode ?? $material_kitting->item_code; // CHRIS 03-30-2026
         }else{
             $device_name_print = 'not found';

@@ -119,7 +119,7 @@ class TSPTSController extends Controller
         ->where('status',4)
         ->get();
 
-        return $oqcvirs;
+        // return $oqcvirs;
 
 
 
