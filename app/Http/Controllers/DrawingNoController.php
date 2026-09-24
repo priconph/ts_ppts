@@ -13,7 +13,7 @@ class DrawingNoController extends Controller
     public function get_drawing_no(Request $request){
         // $device_name = explode('-', $request['device_name']);
         // $device_name_str = $device_name[0].'-'.$device_name[1];
-     
+
         // return $device_name_str;
 
         // return $device_name_str;
@@ -40,7 +40,7 @@ class DrawingNoController extends Controller
         return ($doc);
     }
 
- 
+
     public function get_adrawing_no(Request $request){
         // $device_name = explode('-', $request['device_name']);
         // $device_name_str = $device_name[0].'-'.$device_name[1];
@@ -170,8 +170,8 @@ class DrawingNoController extends Controller
     }
 
     public function get_OGM_VIG_IGDoc(Request $request){
- 
-        
+
+
         // if( strlen($request_str)<3 ){
         //     $request_str = 'show nothing';
         // }
@@ -226,10 +226,11 @@ class DrawingNoController extends Controller
         $device_name = CommonController::getInstance()->validate_device_name_acdcs_packing($device_name);
         $request_str = $request->str;
         $DrawingNo = RapidActiveDocs::
-        // where('doc_no','LIKE', '%'.$request_str.'%')
-        where('doc_title', 'LIKE', '%' . $request_str . '%')
+        where('doc_no','LIKE', '%'.$request_str.'%')
+        ->orWhere('doc_title', 'LIKE', '%' . $request_str . '%')
         ->orWhere('doc_title', '%' . $device_name . '%')
-        ->where('doc_type', 'PP')
+        // ->where('doc_type', 'PP')
+        // ->orWhere('doc_type', 'Point Panel')
         ->limit(300)
         ->get();
         $doc = array();
@@ -245,27 +246,27 @@ class DrawingNoController extends Controller
             $request_str = 'show nothing';
         }
         // $DrawingNo = DrawingNo::where('logdel', 0)
-        $DrawingNo = ACDCSDrawingNo::where('logdel', 0)
-                    // ->where(function($query) use ($device_name_str, $request_str) {
-                    //     $query->where('doc_title', "like",'%'.$device_name_str.'%')
-                    //     ->orWhere('doc_title', "like",'%'.$request_str.'%');
-                    // })
-                    ->where('doc_type', 'Urgent Direction')
-                    ->where('originator_code', 'TS')
-                    // ->where('station', 'like', '%Final Visual%')
-                    ->limit('200')
-                    ->get();
-        // $device_name = $request['device_name'];
-        // $device_name = CommonController::getInstance()->validate_device_name_acdcs_packing($device_name);
-        // $request_str = $request->str;
-        // $DrawingNo = RapidActiveDocs::
-        // // where('doc_no','LIKE', '%'.$request_str.'%')
-        // where('doc_title', 'LIKE', '%' . $request_str . '%')
-        // ->orWhere('doc_title', '%' . $device_name . '%')
-        // ->where('doc_type', 'Urgent Direction')
-        //  ->where('originator_code', 'TS')
-        // ->limit(300)
-        // ->get();
+        // $DrawingNo = ACDCSDrawingNo::where('logdel', 0)
+        //             // ->where(function($query) use ($device_name_str, $request_str) {
+        //             //     $query->where('doc_title', "like",'%'.$device_name_str.'%')
+        //             //     ->orWhere('doc_title', "like",'%'.$request_str.'%');
+        //             // })
+        //             ->where('doc_type', 'Urgent Direction')
+        //             ->where('originator_code', 'TS')
+        //             // ->where('station', 'like', '%Final Visual%')
+        //             ->limit('200')
+        //             ->get();
+        $device_name = $request['device_name'];
+        $device_name = CommonController::getInstance()->validate_device_name_acdcs_packing($device_name);
+        $request_str = $request->str;
+        $DrawingNo = RapidActiveDocs::
+        // where('doc_no','LIKE', '%'.$request_str.'%')
+        where('doc_title', 'LIKE', '%' . $request_str . '%')
+        ->orWhere('doc_title', '%' . $device_name . '%')
+        ->where('doc_type', 'Urgent Direction')
+         ->where('originator_code', 'TS')
+        ->limit(300)
+        ->get();
         $doc = array();
         $doc['doc'] = $DrawingNo;
 
@@ -281,30 +282,30 @@ class DrawingNoController extends Controller
         if( strlen($request_str)<3 ){
             $request_str = 'show nothing';
         }
-        $DrawingNo = ACDCSDrawingNo::where('logdel', 0)
-                    // ->where(function($query) use ($device_name_str, $request_str) {
-                    //     $query->where('doc_title', "like",'%'.$device_name_str.'%')
-                    //     ->orWhere('doc_title', "like",'%'.$request_str.'%');
-                    // })
-                    // ->where('doc_title', "like",'%'.$device_name_str.'%')
-                    ->where('doc_type', 'J Drawing')
-                    ->where('originator_code', 'TS')
-                    ->orWhere('doc_type', 'R Drawing')
-                    // ->where('station', 'like', '%Final Visual%')
-                    ->limit('200')
-                    ->get();
+        // $DrawingNo = ACDCSDrawingNo::where('logdel', 0)
+        //             // ->where(function($query) use ($device_name_str, $request_str) {
+        //             //     $query->where('doc_title', "like",'%'.$device_name_str.'%')
+        //             //     ->orWhere('doc_title', "like",'%'.$request_str.'%');
+        //             // })
+        //             // ->where('doc_title', "like",'%'.$device_name_str.'%')
+        //             ->where('doc_type', 'J Drawing')
+        //             ->where('originator_code', 'TS')
+        //             ->orWhere('doc_type', 'R Drawing')
+        //             // ->where('station', 'like', '%Final Visual%')
+        //             ->limit('200')
+        //             ->get();
 
-        // $device_name = $request['device_name'];
-        // $device_name = CommonController::getInstance()->validate_device_name_acdcs_packing($device_name);
-        // $request_str = $request->str;
-        // $DrawingNo = RapidActiveDocs::
-        // where('doc_no','LIKE', '%'.$request_str.'%')
-        // ->orwhere('doc_title', 'LIKE', '%' . $request_str . '%')
-        //  ->where('doc_type', 'J Drawing')
-        // ->orWhere('doc_type', 'R Drawing')
-        //  ->where('originator_code', 'TS')
-        // ->limit(300)
-        // ->get();
+        $device_name = $request['device_name'];
+        $device_name = CommonController::getInstance()->validate_device_name_acdcs_packing($device_name);
+        $request_str = $request->str;
+        $DrawingNo = RapidActiveDocs::
+        where('doc_no','LIKE', '%'.$request_str.'%')
+        ->orwhere('doc_title', 'LIKE', '%' . $request_str . '%')
+         ->where('doc_type', 'J Drawing')
+        ->orWhere('doc_type', 'R Drawing')
+         ->where('originator_code', 'TS')
+        ->limit(300)
+        ->get();
 
         $doc = array();
         $doc['doc'] = $DrawingNo;

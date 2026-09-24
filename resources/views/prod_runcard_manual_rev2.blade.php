@@ -5527,7 +5527,7 @@
                         //     $("#txt_device_code_lbl").val(deviceInfo['device_code']);
                         //     $("#txt_po_qty_lbl").val(deviceInfo['po_qty']);
                         // }
-                    
+
                         list += "<option value='"+deviceInfo['po_no']+"' data-device-name='"+deviceInfo['device_name']+"'>"+deviceInfo['po_no']+(deviceInfo['device_name'] ? ' - '+deviceInfo['device_name'] : '')+"</option>";
                         // }
                     }
@@ -5571,7 +5571,8 @@
           }
         });
       });
-
+      //DOC
+      //J117193-001
       $('#txt_WIDoc').change(function () {
         if($('#txt_WIDoc').val() != 0) {
           var thiss = $(this);
@@ -7560,7 +7561,7 @@ function OutputDataCounter(api) {
                                 $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
                             }
                         }else{
-                
+
                         $("#txt_device_name_lbl").val(data['material_kitting']['product_name']);
                         $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
                             alert(data['material_kitting']['po_no'])
@@ -7569,7 +7570,7 @@ function OutputDataCounter(api) {
 
                         $('#lbl_device_name').attr('device_name_print', data['device_name_print'] );
                     }
-                    
+
 
                     if (data['a_drawing'] == '' ){
                     $("#txt_Adrawing").val('N/A');
