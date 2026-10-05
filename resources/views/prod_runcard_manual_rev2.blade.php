@@ -5470,7 +5470,7 @@
       });
 
       //WI Doc
-      $(".class_txt_WIDoc").on("keyup", function(e){
+      $(".class_txt_WIDoc").on("keyup", function(e){ //nmodify
         var parent        = $(this).closest(".row_container");
         var data = {
           "action"          : "get_WIDoc",
@@ -5487,10 +5487,10 @@
 
             var list    = "";
 
-             list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            list+="<option value='N/A' data-revision='N/A' >N/A</option>";
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
 
@@ -5538,14 +5538,24 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+            //     list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+            //   }
+            // }
+
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
+            //   }
+            // }
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
-
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
-
              console.log(data['doc'])
 
             $(parent).find(".class_dl_OGM_VIG_IGDoc").html(list);
@@ -5590,14 +5600,16 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+            //   }
+            // }
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
-
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
-
              console.log(data['doc'])
 
             $(parent).find(".class_dl_PPDoc").html(list);
@@ -5642,14 +5654,20 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
-            if ($.trim(data['doc'])){
-              for(var ctr=0;ctr<data['doc'].length;ctr++){
-                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
 
-              }
-            }
+            //   }
+            // }
 
              console.log(data['doc'])
+
+            if ($.trim(data['doc'])){
+              for(var ctr=0;ctr<data['doc'].length;ctr++){
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
+              }
+            }
 
             $(parent).find(".class_dl_UDDoc").html(list);
           }
@@ -5692,7 +5710,7 @@
 
             var list    = "";
 
-             list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            list+="<option value='N/A' data-revision='N/A' >N/A</option>";
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
                 list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
@@ -5724,6 +5742,262 @@
             $('#txt_PMDoc_rev').val('N/A');
         }
       });
+
+    //   //WI Doc
+    //   $(".class_txt_WIDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_WIDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_WIDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_WIDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_WIDoc').change(function () {
+    //     if($('#txt_WIDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_WIDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_WIDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_WIDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //OGM/VIG/IG Doc
+    //   $(".class_txt_OGM_VIG_IGDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_OGM_VIG_IGDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_OGM_VIG_IGDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //             list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_OGM_VIG_IGDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_OGM_VIG_IGDoc').change(function () {
+    //     if($('#txt_OGM_VIG_IGDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_OGM_VIG_IGDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_OGM_VIG_IGDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_OGM_VIG_IGDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //PP
+    //   $(".class_txt_PPDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_PPDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_PPDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //             list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_PPDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_PPDoc').change(function () {
+    //     if($('#txt_PPDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_PPDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_PPDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_PPDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //UD
+    //   $(".class_txt_UDDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_UDDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_UDDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_UDDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_UDDoc').change(function () {
+    //     if($('#txt_UDDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_UDDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_UDDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_UDDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //PM
+    //   $(".class_txt_PMDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_PMDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_PMDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_PMDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_PMDoc').change(function () {
+    //     if($('#txt_PMDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_PMDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_PMDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_PMDoc_rev').val('N/A');
+    //     }
+    //   });
 
 
 
