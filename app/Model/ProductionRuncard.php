@@ -2,28 +2,27 @@
 
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-use App\User;
+use App\Model\AssemblyLine;
+use App\Model\MaterialIssuanceSubSystem;
+use App\Model\MaterialProcess;
+use App\Model\OQCInspection_2;
+use App\Model\OQCInspection;
 use App\Model\oqcLotApp;
 use App\Model\oqcVIR;
-use App\Model\MaterialIssuanceSubSystem;
-use App\Model\ProductionRuncardStation;
-use App\Model\ProdRuncardMaterialList;
-use App\Model\MaterialProcess;
 use App\Model\ProdRuncardAccessory;
-use App\Model\OQCInspection_2;
-
+use App\Model\ProdRuncardMaterialList;
+use App\Model\ProductionRuncardStation;
+use App\Model\TSPTSFinalPackingInspection;
+use App\Model\TSPTSFinalPackingInspectionQC;
+use App\Model\TSPTSFinalPackingInspectionTrfficQC_QC;
+use App\Model\TSPTSFinalPackingInspectionTrfficQC;
 use App\Model\TSPTSOqcVir;
 use App\Model\TSPTSPackingConfirmation;
 use App\Model\TSPTSPreliminaryPackingInspection;
 use App\Model\TSPTSSupervisorValidation;
-use App\Model\TSPTSFinalPackingInspection;
-use App\Model\TSPTSFinalPackingInspectionQC;
-use App\Model\TSPTSFinalPackingInspectionTrfficQC;
-use App\Model\TSPTSFinalPackingInspectionTrfficQC_QC;
 use App\Model\YeuKitting;
-
-use App\Model\AssemblyLine;
+use App\User;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductionRuncard extends Model
 {
@@ -119,9 +118,15 @@ class ProductionRuncard extends Model
     public function tspts_finalpackinginspection_info_traffic_qc_qc(){
         return $this->hasMany(TSPTSFinalPackingInspectionTrfficQC_QC::class, 'lotapp_id', 'id');
     }
+    public function oqc_inspec_2(){
+        return $this->hasOne(OQCInspection_2::class, 'prod_runcard_id', 'id');
+    }
 
     public function AssemblyLineDetails(){
         return $this->hasOne(AssemblyLine::class, 'id', 'assembly_line_id');
+    }
+    public function production_runcards_device(){
+        return $this->hasOne(Device::class, 'name', 'device_name');
     }
 
 }

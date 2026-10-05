@@ -8194,7 +8194,7 @@ class ProductionRuncardController_rev extends Controller
         $lot_start_counter = ceil(( $lot_number - 1 ) * (  ceil((int)$device[0]->ship_boxing / (int)$device[0]->boxing ))); // To remove duplicate
         // return $lot_start_counter;
         $_stations__ = [];
-        if( $prd_runcards[0]->po_qty <= 99 || $prd_runcards[0]->po_no = '450257796000010'){
+        if( $prd_runcards[0]->po_qty <= 99 || $prd_runcards[0]->po_no == '450257796000010'){
             $lot_start_counter = 0;
             // $sticker_cnt = 1;
             $current_lot_id_is_selected = false;

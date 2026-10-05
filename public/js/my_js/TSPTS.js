@@ -107,7 +107,7 @@ function TSPTSViewLotAppDetails(lotapp_id)
                     }
 
                     let _qtt = list[i]['qty'] + ""
-                    
+
                     if( list[i]['box_no'].split('-').length == 2 )
                         _qtt = list[i]['gross_weight'].split('(')[1].split('/')[0] + ""
 

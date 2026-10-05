@@ -195,9 +195,9 @@ Route::get('/packingseeder', function () {
     return view('packingseeder');
 })->name('packingseeder');
 
-Route::get('/dlabelprinting_rev6_f3', function () {
+Route::get('/dlabelprinting_rev6', function () {
     return view('dlabelprinting_shipment_dashboard');
-})->name('dlabelprinting_rev6_f3');
+})->name('dlabelprinting_rev6');
 
 
 

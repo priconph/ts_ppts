@@ -2047,7 +2047,7 @@
                 getWbsPoDetails(oqc_lotapp_po_no); //Common.js+
                 setTimeout(() => {
                     dt_oqcvir.draw();
-                }, 300);
+                }, 1000);
             }
         }
         } catch (error) {
@@ -2564,7 +2564,7 @@
               // console.log('JsonObject', JsonObject)
               // console.log('http://192.168.3.17/pmi-subsystem/oqcinspection?' + encodeURI(
               // window.open('http://rapidx/ts_ppts/wbs_getLotDetails_try_url?' + encodeURI(
-              window.open('http://192.168.180.11/pmi-subsystem/oqcinspection?' + encodeURI(
+              window.open('http://192.168.3.246/pmi-subsystem/oqcinspection?' + encodeURI(
                 'po_no=' + JsonObject['po_no'] +
                 '&po_qty=' + JsonObject['po_qty'] +
                 '&lot_no=' + JsonObject['lot_no'] +

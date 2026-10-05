@@ -24,7 +24,7 @@
         <img src="{{ asset('public/images/pats-logo-ts.PNG') }}" style="max-width: 250px;" title="Product Automated Traceability System - TS">
       </a>
       <br> -->
-      <b>F3 TS</b><br>
+      <b>TS</b><br>
       <a href="{{ route('login') }}"><b> Production Product Traceability System</b></a> <br>
     </div>
     <div class="card-body login-card-body">
@@ -51,7 +51,7 @@
         <div class="row">
           <!-- /.col -->
           <div class="col-12">
-            <button type="submit" class="btn btn-warning btn-block" id="btnSignIn"><i class="fa fa-check" id="iBtnSignInIcon"></i> Sign In</button>
+            <button type="submit" class="btn btn-primary btn-block" id="btnSignIn"><i class="fa fa-check" id="iBtnSignInIcon"></i> Sign In</button>
           </div>
           <!-- /.col -->
         </div>
