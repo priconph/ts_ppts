@@ -5784,7 +5784,16 @@ class ProductionRuncardController_rev extends Controller
 
                             // if($user_info != null){
                                 // $runcard_no = substr($request->txt_po_number, 0, -5);
-                                $runcard_no = 'LOT';
+                                // $runcard_no = 'LOT';
+                                if ( str_contains( $request->txt_po_number, 'ES') || str_contains(  $request->txt_po_number, 'PO') ){
+                                    $PO_num = str_replace('-', '', $request->txt_po_number); //07-09-26 Sample Output: ES26095
+                                }else if( str_contains(  $request->txt_po_number, '-A1'  ) ){
+                                    $PO_num = substr($request->txt_po_number, 0, -6);
+                                }else{
+                                    $PO_num = substr($request->txt_po_number, 4, 4); //old code
+                                }
+                                // $runcard_no = 'LOT';
+                                $runcard_no = $PO_num.'LOT'; //10252021
                                 $prod_runcard_id = "";
 
                                 $arr_packing_months = [1,2,3,4,5,6,7,8,9,'X','Y','Z'];

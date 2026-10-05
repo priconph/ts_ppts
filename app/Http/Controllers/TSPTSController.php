@@ -5558,13 +5558,13 @@ Packing Doc. #: ' . $doc_list
                     return $query->where('status', 1);
                 }
             ])
-            ->where('id',$request['lotapp_id'])
+            ->where('id',$request['id'])
             // ->whereHas('prod_runcard_station_many_details',function($query) use ($request){
             //         $query->where('status',1);
             // })
             ->get();
 
-            return $ins_result_by_id;
+            // return $ins_result_by_id;
 
 
             $device_name_print = 'not found';
