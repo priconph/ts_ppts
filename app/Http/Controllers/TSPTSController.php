@@ -103,7 +103,200 @@ class TSPTSController extends Controller
         }
     }
 
-    public function load_oqcvir_pts_table(Request $request)
+    public function load_oqcvir_pts_table(Request $request){
+         // return 'asd';
+        // Pre-determine the parsing strategy (constant for the whole request)
+        $poNum = $request->po_num ?? "";
+        $suffixMatch = preg_match('/-(A|A1|B|B1)$/', $poNum);
+        $dashOneMatch = str_contains($poNum, '-1');
+
+        // Optimized Query with Eager Loading
+        // Note: Added 'oqc_inspec_2' and 'tspts_oqcvir_info.inspector_info' to eager load
+        $oqcvirs = ProductionRuncard::with([
+            'prod_runcard_station_many_details' => function($query) {
+                $query->where('status', 1);
+            },
+            'prod_runcard_accessory_info',
+            'oqc_inspec_2',
+            'production_runcards_device',
+            'tspts_oqcvir_info' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'tspts_oqcvir_info.inspector_info'
+        ])
+        ->where('po_no', $poNum)
+        // ->where('status', 4)
+        ->where('status','>=',3)
+        ->get();
+
+        if($poNum != ""){
+             $withOrWithoutOverall = $oqcvirs[0]->production_runcards_device->process ?? '';
+            if($withOrWithoutOverall === 0){ //EDIT if the Device Matrix is Without Overall
+                ProductionRuncard::
+                where('po_no', $poNum)
+                ->where('status', 3)
+                ->update(['status'=>4]);
+            }
+        }
+        $allModesOfDefect = ModeOfDefect::all()->keyBy('id');
+        // Fetch all inspections for this PO once to avoid queries in the loop
+        $allOqcInspections = OQCInspection::where('po_no', $poNum)->get()->groupBy('lot_no');
+
+        $oqcvirs->transform(function ($item) use ($suffixMatch, $dashOneMatch, $allOqcInspections) {
+            $parts = explode('-', $item->lot_no);
+
+            // Optimized Logic for Lot No
+            if ($suffixMatch) {
+                $lot_no = $parts[2] ?? 0;
+            } elseif ($dashOneMatch) {
+                $lot_no = (count($parts) > 2) ? ($parts[2] ?? 0) : ($parts[1] ?? 0);
+            } else if(count($parts) == 3){
+                $lot_no = $parts[2] ?? 0;
+            }
+            else  {
+                $lot_no = $parts[1] ?? 0;
+            }
+
+            $item->nnnnnnnn = (int)$lot_no;
+
+            // Assign pre-fetched inspection (First match)
+            $item->oqc_inspec = $allOqcInspections->get($item->nnnnnnnn, collect());
+
+            // Calculate sum in memory to avoid query in DataTable
+            $item->total_output_qty = $item->prod_runcard_station_many_details->sum('qty_output');
+
+            return $item;
+        });
+        // DataTables (Using pre-loaded data)
+        return DataTables::of($oqcvirs)
+            ->addColumn('oqc_stamp', function($oqcvir) {
+                $inspec2 = $oqcvir->oqc_inspec_2 ?? null;
+                if($inspec2 != null){
+                    $oqcvir->oqc_inspec_2->first() ?? '';
+                    return ($inspec2 && $inspec2->oqc_stamp) ? $inspec2->oqc_stamp : '---';
+                }
+                return '---';
+            })
+            ->addColumn('action', function($oqcvir) {
+                if ($oqcvir->oqc_inspec->isNotEmpty()) {
+                    return '<button type="button" class="btn btn-sm btn-success btn-view-application" lotapp-id="'.$oqcvir->id.'"><i class="fa fa-eye"></i></button>';
+                }
+                return '<button type="button" class="btn btn-sm btn-warning btn-goto-wbsoqc" lotapp-id="'.$oqcvir->id.'"><i class="fa fa-location-arrow"></i></button>';
+            })
+            ->addColumn('output_qty', function($oqcvir) {
+                return $oqcvir->total_output_qty;
+            })
+            ->addColumn('inspected_by', function($oqcvir) {
+                $info = $oqcvir->tspts_oqcvir_info ?? null;
+                if($info != null){
+                    $info = $oqcvir->tspts_oqcvir_info->first() ?? '';
+                    return ($info && $info->inspector_info) ? $info->inspector_info->name : '---';
+                }
+                return '---';
+
+            })
+            ->addColumn('fy_ww', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->fy . ' - ' . $oqcvir->oqc_inspec[0]->ww;
+                return '---';
+            })
+            ->addColumn('date_inspected', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->date_inspected;
+                return '---';
+            })
+            ->addColumn('from', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->time_ins_from;
+                return '---';
+            })
+            ->addColumn('to', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->time_ins_to;
+                return '---';
+            })
+            ->addColumn('sub_lot', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->submission;
+                return '---';
+            })
+            ->addColumn('lot_size', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->lot_qty;
+                return '---';
+            })
+            ->addColumn('sample_size', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->sample_size;
+                return '---';
+            })
+            ->addColumn('num_of_defects', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->num_of_defects;
+                return '---';
+            })
+            ->addColumn('qty', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->po_qty;
+                return '---';
+            })
+            ->addColumn('mod', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0){
+                    if( $oqcvir->oqc_inspec[0]->judgement == 'Accept' || $oqcvir->oqc_inspec[0]->modid == '' )
+                        return 'NDF';
+                    else{
+                        $mod = ModeOfDefect::find($oqcvir->oqc_inspec[0]->modid);
+                        if( isset($mod->name) )
+                            return $mod->name;
+                        return 'NDF';
+                    }
+                }
+                return '---';
+            })
+            ->addColumn('judgement', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0){
+                    if( $oqcvir->oqc_inspec[0]->judgement == 'Accept' )
+                        return '<span class="badge badge-pill badge-success">' . $oqcvir->oqc_inspec[0]->judgement . '</span>';
+                    else
+                        return '<span class="badge badge-pill badge-danger">' . $oqcvir->oqc_inspec[0]->judgement . '</span>';
+                }
+                return '---';
+            })
+            ->addColumn('inspector', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->inspector;
+                return '---';
+            })
+            ->addColumn('remarks', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->remarks;
+                return '---';
+            })
+            ->addColumn('type', function($oqcvir){
+                if(count($oqcvir->oqc_inspec) > 0)
+                    return $oqcvir->oqc_inspec[0]->type;
+                return '---';
+            })
+            ->addColumn('mod', function($oqcvir) use ($allModesOfDefect) {
+                $inspec = $oqcvir->oqc_inspec->first();
+                if ($inspec) {
+                    if ($inspec->judgement == 'Accept' || empty($inspec->modid)) return 'NDF';
+                    return $allModesOfDefect->get($inspec->modid)->name ?? 'NDF';
+                }
+                return '---';
+            })
+            ->addColumn('judgement', function($oqcvir) {
+                $inspec = $oqcvir->oqc_inspec->first();
+                if ($inspec) {
+                    $class = ($inspec->judgement == 'Accept') ? 'success' : 'danger';
+                    return '<span class="badge badge-pill badge-'.$class.'">' . $inspec->judgement . '</span>';
+                }
+                return '---';
+            })
+            ->rawColumns(['action', 'judgement'])
+            ->make(true);
+    }
+    public function load_oqcvir_pts_table_test(Request $request)
     {
         // return 'asd';
         // return $request->po_num;
