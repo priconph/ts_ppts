@@ -2,8 +2,11 @@
 
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-use App\User;
+use App\Model\AssemblyLine;
+use App\Model\MaterialIssuanceSubSystem;
+use App\Model\MaterialProcess;
+use App\Model\OQCInspection_2;
+use App\Model\OQCInspection;
 use App\Model\oqcLotApp;
 use App\Model\oqcVIR;
 use App\Model\MaterialIssuanceSubSystem;
@@ -43,10 +46,9 @@ class ProductionRuncard extends Model
     }
 
     public function oqc_details(){
-        return $this->hasOne(oqcLotApp::class, 'fkid_runcard', 'id')
-        ->orderBy('id','DESC'); 
-        // return $this->hasMany(oqcLotApp::class, 'fkid_runcard', 'id'); // updated 04/01/2026 - da - to accomodate multiple lot batch numbers for a single runcard.
-    } 
+        return $this->hasOne(oqcLotApp::class, 'fkid_runcard', 'id'); //02072020
+        // return $this->hasOne(oqcLotApp::class, 'lot_batch_no', 'runcard_no');
+    }
 
     public function wbs_kitting(){
         return $this->hasOne(MaterialIssuanceSubSystem::class, 'po_no', 'po_no');
@@ -119,6 +121,9 @@ class ProductionRuncard extends Model
 
     public function tspts_finalpackinginspection_info_traffic_qc_qc(){
         return $this->hasMany(TSPTSFinalPackingInspectionTrfficQC_QC::class, 'lotapp_id', 'id');
+    }
+    public function oqc_inspec_2(){
+        return $this->hasOne(OQCInspection_2::class, 'prod_runcard_id', 'id');
     }
 
     public function AssemblyLineDetails(){

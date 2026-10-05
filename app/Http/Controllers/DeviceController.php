@@ -124,7 +124,6 @@ class DeviceController extends Controller
         );
 
         $validator = Validator::make($data, [
-            //TODO: MIGZ 04-20-2024 The PPC Staffinsert code and device name only , then the Prodn will edit the rest of the qty.
             // 'barcode' => ['required', 'numeric'],
             'name' => ['required', 'string', 'max:255'],
             // 'process' => ['required', 'numeric'],
@@ -142,10 +141,9 @@ class DeviceController extends Controller
             $is_barcode_exist = Device::where('barcode',$request->barcode)->where('status',1)->get();
             if( count($is_barcode_exist) != 0){
                 DB::rollback();
-                return response()->json(['result' => '0', 'error' =>'Saving Failed: Duplicate Product Code or Name !'],500);
+                return response()->json(['result' => '0', 'error' =>'Saving Failed: Duplicate Product Code!'],500);
             }
             try{
-                //TODO: MIGZ 04-20-2024 The PPC Staffinsert code and device name only , then the Prodn will edit the rest of the qty.
                 Device::insert([
                     'name' => $request->name,
                     // 'process' => $request->process,

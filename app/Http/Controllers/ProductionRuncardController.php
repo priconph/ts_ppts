@@ -32,9 +32,11 @@ use App\Model\ProductionRuncardStationMachine;
 use App\Model\ProductionRuncardMaterial;
 use App\Model\ProdRuncardAccessory;
 use App\Model\YeuKitting;
-use Auth;
+// use Auth;
+use Illuminate\Support\Facades\Auth;
 use QrCode;
-use DataTables;
+// use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 
 class ProductionRuncardController extends Controller

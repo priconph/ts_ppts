@@ -138,10 +138,10 @@
                               <th>Supervisor</th>
                             </tr>
                           </thead>
-                      </table> 
+                      </table>
                   </div>
                 </div>
-              </div> 
+              </div>
 
 
 
@@ -198,6 +198,7 @@
                 <div class="input-group-prepend w-50">
                   <span class="input-group-text w-100" id="basic-addon1">PO Number</span>
                 </div>
+                <input type="hidden" name="confirmed_partial" id="confirmed_partial" value="0">
                 <input type="text" class="form-control form-control-sm" id="add_po_no" name="add_po_no" readonly>
               </div>
             </div>
@@ -287,6 +288,22 @@
             </div>
 
             <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend w-50">
+                        <span class="input-group-text w-100" id="basic-addon1">Actual Packing VS. Packing Document Tally?</span>
+                        </div>
+                        <select class="form-control form-control-sm" id="add_actual_v_packing_doc" name="add_actual_v_packing_doc">
+                            <option selected disabled>-- Choose One --</option>
+                            <option value='1'>YES</option>
+                            <option value='2'>NO</option>
+                            <option value='3'>N/A</option>
+                        </select>
+                    </div>
+                </div>
+          </div>
+
+            <div class="row">
                <div class="col">
                 <div class="input-group input-group-sm mb-3">
                   <div class="input-group-prepend w-50">
@@ -317,7 +334,7 @@
                   <span class="input-group-text w-100" id="basic-addon1">Validaton Date/Time</span>
                 </div>
 <!--                 <input type="datetime-local" class="form-control form-control-sm" id="add_confirmation_datetime" name="add_confirmation_datetime">
- -->                
+ -->
                  <input type="text" class="form-control form-control-sm" id="add_confirmation_datetime" name="add_confirmation_datetime" readonly="true" placeholder="Auto generated">
               </div>
             </div>
@@ -389,10 +406,10 @@
                           <th>Correctness of Parts</th>
                         </tr>
                       </thead>
-                  </table> 
+                  </table>
               </div>
             </div>
-          </div>  
+          </div>
 
            <div class="card card-primary">
 
@@ -416,7 +433,7 @@
                           <th>Output Quantity</th>
                         </tr>
                       </thead>
-                  </table> 
+                  </table>
               </div>
               <div class="row">
                 <div class="col">
@@ -456,7 +473,7 @@
       dt_supervisor_validation = $('#tbl_supervisor_validation').DataTable({
           "processing"    : false,
           "serverSide"  : true,
-          "ajax"        : 
+          "ajax"        :
           {
             url: "load_supervisorvalidation_pts_table",
                 data: function (param){
@@ -479,7 +496,7 @@
 
           "processing"  : false,
           "serverSide"  : true,
-          "ajax"        : 
+          "ajax"        :
           {
             url: "load_supervisor_validation_pts_results",
               data: function (param){
@@ -502,7 +519,7 @@
 
           "processing"    : false,
           "serverSide"  : true,
-          "ajax"        : 
+          "ajax"        :
           {
             url: "load_runcards_tspts_table",
               data: function (param){
@@ -540,7 +557,7 @@
             $('#modalScan_PO').modal('hide');
           }
         }
-    }); 
+    });
     $(document).on('keypress','#txt_search_po_number',function(e){
         try { // nmodify - Search PO using object
             if( e.keyCode == 13 ){
@@ -563,7 +580,7 @@
         }
     });
 
- 
+
 
 $(document).on('click','.btn-supervisor-validation',function(){
 
@@ -600,7 +617,7 @@ $('#btnSubmitValidation').click(function(){
       dataType: "json",
       success: function(JsonObject)
       {
-        
+
         // $('#total_input').html( JsonObject['data']['ttl_input'] );
         $('#total_output').val( JsonObject['data']['ttl_output'] );
         // $('#total_ng').html( JsonObject['data']['ttl_ng'] );
@@ -608,7 +625,7 @@ $('#btnSubmitValidation').click(function(){
       }
 
     });
-    
+
   });
 
 
@@ -618,7 +635,7 @@ $('#btnSubmitValidation').click(function(){
   let device_name = $('#id_device_name').val();
 
   popup = window.open();
-         
+
           let content = '';
           content += '<html>';
           content += '<head>';
@@ -746,14 +763,14 @@ $(document).on('keypress',function(e){
             });
 
           // GetInspectorDetails($('#txt_employee_id').val());
-          
+
         }
       }
-  }); 
+  });
 
   $('#btn_download').click(function(){
     window.open('public/storage/file_templates/user_manual/TS PTS User Manual - Supervisor Validation.pdf','_blank');
-  });  
+  });
 
 
 

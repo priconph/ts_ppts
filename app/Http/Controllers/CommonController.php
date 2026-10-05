@@ -86,6 +86,12 @@ class CommonController extends Controller
                     $device_name = $device_name.")";
                 }
             }
+            if( strpos( $device_name, "- (Burn-in Memory Sockets)" ) == true) {
+                $device_name = trim($device_name,"- (Burn-in Memory Sockets)");
+                if( strpos( $device_name, "(" ) == true) {
+                    $device_name = $device_name.")";
+                }
+            }
         }
         return $device_name;
     }
@@ -125,6 +131,12 @@ class CommonController extends Controller
             }
             if( strpos( $device_name, "- (Burn-in others)" ) == true) {
                 $device_name = trim($device_name,"- (Burn-in others)");
+                if( strpos( $device_name, "(" ) == true) {
+                    $device_name = $device_name.")";
+                }
+            }
+            if( strpos( $device_name, "- (Burn-in Memory Sockets)" ) == true) {
+                $device_name = trim($device_name,"- (Burn-in Memory Sockets)");
                 if( strpos( $device_name, "(" ) == true) {
                     $device_name = $device_name.")";
                 }

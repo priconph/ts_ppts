@@ -32,24 +32,85 @@ function AddOQCLotApp(){
             	$("#modalOQCLotApp").modal('hide');
             	$("#formOQCLotApp")[0].reset();
 
-            	dataTableOQCLotApp.draw();
-              toastr.success('Lot Application was successfully saved!');
+                dataTableOQCLotApp.draw();
+                toastr.success('Lot Application was successfully saved!');
 
             } else if (JsonObject['result'] == '2'){
                 toastr.error('Invalid Employee No. for final visual operator!');
             } else if (JsonObject['result'] == '3'){
                 toastr.error('Max of 3rd submission only!');
             }
-            // else if (JsonObject['result'] == '4'){
-            //     toastr.error('Output Quantity is not equal to Lot Quantity!');
-            // }
+            else if (JsonObject['result'] == 'partial_lot') { // boss da
+                showPartialLotAlert(JsonObject);
+            }
+
             else{
+                if(JsonObject['result'] == 'x'){
+                    toastr.error('Check Partial Qty.');
+                    showPartialLotAlert(JsonObject);
+                }
                 toastr.error('Saving lot application failed!');
             }
         },
         error: function(data, xhr, status){
             toastr.error('An error occured!\n' + 'Data: ' + data + "\n" + "XHR: " + xhr + "\n" + "Status: " + status);
+            // console.log(data);
         }
+    });
+}
+
+// boss da
+function showPartialLotAlert(JsonObject) {
+
+    Swal.fire({
+        title: 'Partial Lot',
+        text: JsonObject['message'] || 'This is a partial lot.',
+        input: 'number',
+        inputLabel: 'Enter Partial Quantity',
+
+        inputValue: '',
+
+        inputAttributes: {
+            min: 1,
+            max: parseInt(JsonObject['remainder']),
+            step: 1
+        },
+
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+
+        inputValidator: function(value) {
+
+            if (!value) {
+                return 'Please enter the partial quantity.';
+            }
+
+            let qty = parseInt(value);
+            let remainder = parseInt(JsonObject['remainder']);
+
+            if (qty <= 0) {
+                return 'Quantity must be greater than 0.';
+            }
+
+            if (qty > remainder) {
+                return 'Partial quantity cannot exceed ' + remainder + '.';
+            }
+        }
+
+    }).then(function(result) {
+
+        if (result.value !== undefined) {
+
+            let partialQty = parseInt(result.value);
+
+            console.log('User entered partial quantity:', partialQty);
+
+            $('#partial_qty').val(partialQty);
+
+            AddOQCLotApp();
+        }
+
     });
 }
 

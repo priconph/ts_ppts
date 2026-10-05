@@ -673,7 +673,7 @@
       <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-success">
-                <h4 class="modal-title" id="h4ChangeMatProcTitle"><i class="fas fa-wrench"></i>Auto-insert of Device Name !</h4>
+                <h4 class="modal-title" id="h4ChangeMatProcTitle"><i class="fas fa-wrench"></i> NEW UPDATE : Auto-insert of Device Name !</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -823,8 +823,7 @@
           $("#txtAddDeviceName").attr('title', '');
           $("#txtAddDeviceBarcode").removeClass('is-invalid');
           $("#txtAddDeviceBarcode").attr('title', '');
-          $('#update_modal').modal();
-
+        //   $('#update_modal').modal();
         });
 
         // Edit Device
@@ -836,7 +835,6 @@
           $("#txtEditDeviceName").attr('title', '');
           $("#txtEditDeviceBarcode").removeClass('is-invalid');
           $("#txtEditDeviceBarcode").attr('title', '');
-          $('#update_modal').modal();
         });
 
         //MIGZ 2024 - YPICS API for Matrix
@@ -915,7 +913,7 @@
                               }
                             }
                           });
-
+                    
                     }
                 },error: function (data, xhr, status){
                    toastr.error(`Error: ${data.status}`);

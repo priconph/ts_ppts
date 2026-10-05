@@ -2604,10 +2604,58 @@
     //-----
 
     $(document).ready(function () {
+
+    // $('#txt_po_number_lbl').keyup(function (e) { //nmodify
+    //     if( e.keyCode == 13 ){
+    //         alert('asdas'+$(this).val())
+    //     }
+    // });
+    $('#txt_po_number_lbl').keypress(function(e){
+        if(e.keyCode == 13){
+            GetMaterialKittingListByPoNo($(".selAccessoryName"), $(this).val());
+          // $('#txt_po_number_lbl').val();
+
+          $(this).val( $(this).val().split(' ')[0] )
+          arrSelectedRuncards = [];
+          $("#btnOverallInspection").prop('disabled', true);
+          $("#btnReference").prop('disabled', false);
+          $(".spanOICount").html('');
+          currentPoNo = $(this).val();
+          dt_prod_runcard.draw();
+          $('#tbl_materials tbody tr').removeClass('table-active');
+          // $('#txt_po_number_lbl').val('');
+          $('#txt_device_name_lbl').val('');
+          $('#txt_device_code_lbl').val('');
+          $('#txt_po_qty_lbl').val('');
+          $('#txt_device_name').val('');
+
+          $('#txt_orig_Adrawing').val('');
+          $('#txt_orig_Adrawing_rev').val('');
+          $('#txt_Adrawing').val('');
+          $('#txt_Adrawing_rev').val('');
+          $('#txt_Gdrawing').val('');
+          $('#txt_Gdrawing_rev').val('');
+          $('#txt_JRDJKSDCGJDoc').val('');
+          $('#txt_JRDJKSDCGJDoc_rev').val('');
+          $('#txt_GPMD').val('');
+          $('#txt_GPMD_rev').val('');
+
+
+          // $('#txt_Odrawing').val('');
+          // $('#txt_Odrawing_rev').val('');
+
+          $(this).val('');
+          $(this).focus();
+        }
+      });
+
+
+      //-----
+
       //-----
       //-----
-      //-----
-      // GetMaterialKittingListByPoNo($(".selWBSMatKitItem"));
+    //   GetMaterialKittingListByPoNo($(".selWBSMatKitItem"));
+
 
       $('#tbl_prod_runcard').on('click','.btnPrintRuncardC3Label',function(){
         $('#txt_str').val('');
@@ -3611,8 +3659,8 @@
             // $("#txt_search_po_number").val("");
           },
           "drawCallback": function(row,data,index ){
-            GetMaterialKittingListByPoNo($(".selAccessoryName"), $('#txt_po_number_lbl').val());
 
+            // GetMaterialKittingListByPoNo($(".selAccessoryName"), $('#txt_po_number_lbl').val());
             $(".chkSelProdRuncard").each(function(index){
                 if(arrSelectedRuncards.includes($(this).attr('production-runcard-id'))){
                     $(this).attr('checked', 'checked');
@@ -3645,8 +3693,7 @@
               api.column(0, {page:'current'} ).data().each( function ( group, i ) {
                   let data = api.row(i).data();
                   console.log('api.row(i).data ', data['raw_qty_output_sum'] ?? 0);
-                  if(data['last_runcard_po_qty'] != null){ //nmodify
-
+                  if(data['last_runcard_po_qty'] != null){
                     totalNoOfOk += parseInt(data['raw_qty_output_sum']);
                   }
                   // let recount_ok = data.recount_ok;
@@ -3732,8 +3779,9 @@
               // console.log(totalNoOfOk);
               // console.log(totalNoOfNG);
               $("#btnShowNGSummary").prop('disabled', false);
+
               $("#txt_total_no_of_ok").val(totalNoOfOk);
-              console.log('totalNoOfOk', parseInt(totalNoOfOk));
+              console.log('totalNoOfOk',totalNoOfOk);
 
               // $("#txt_total_no_of_ng").val(totalNoOfNG);
 
@@ -4918,41 +4966,6 @@
       });
 
 
-      $('#txt_po_number_lbl').keypress(function(e){
-        if(e.keyCode == 13){
-          $(this).val( $(this).val().split(' ')[0] )
-          arrSelectedRuncards = [];
-          $("#btnOverallInspection").prop('disabled', true);
-          $("#btnReference").prop('disabled', false);
-          $(".spanOICount").html('');
-          currentPoNo = $(this).val();
-          dt_prod_runcard.draw();
-          $('#tbl_materials tbody tr').removeClass('table-active');
-          // $('#txt_po_number_lbl').val('');
-          $('#txt_device_name_lbl').val('');
-          $('#txt_device_code_lbl').val('');
-          $('#txt_po_qty_lbl').val('');
-          $('#txt_device_name').val('');
-
-          $('#txt_orig_Adrawing').val('');
-          $('#txt_orig_Adrawing_rev').val('');
-          $('#txt_Adrawing').val('');
-          $('#txt_Adrawing_rev').val('');
-          $('#txt_Gdrawing').val('');
-          $('#txt_Gdrawing_rev').val('');
-          $('#txt_JRDJKSDCGJDoc').val('');
-          $('#txt_JRDJKSDCGJDoc_rev').val('');
-          $('#txt_GPMD').val('');
-          $('#txt_GPMD_rev').val('');
-
-
-          // $('#txt_Odrawing').val('');
-          // $('#txt_Odrawing_rev').val('');
-
-          $(this).val('');
-          $(this).focus();
-        }
-      });
 
       $(document).on('click','#tbl_prod_runcard tr',function(e){
         $(this).closest('tbody').find('tr').removeClass('table-active');
@@ -5457,7 +5470,7 @@
       });
 
       //WI Doc
-      $(".class_txt_WIDoc").on("keyup", function(e){
+      $(".class_txt_WIDoc").on("keyup", function(e){ //nmodify
         var parent        = $(this).closest(".row_container");
         var data = {
           "action"          : "get_WIDoc",
@@ -5474,10 +5487,10 @@
 
             var list    = "";
 
-             list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            list+="<option value='N/A' data-revision='N/A' >N/A</option>";
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
 
@@ -5525,14 +5538,24 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+            //     list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+            //   }
+            // }
+
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
+            //   }
+            // }
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
-
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
-
              console.log(data['doc'])
 
             $(parent).find(".class_dl_OGM_VIG_IGDoc").html(list);
@@ -5577,14 +5600,16 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+            //   }
+            // }
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
-                // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
-
-                list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
               }
             }
-
              console.log(data['doc'])
 
             $(parent).find(".class_dl_PPDoc").html(list);
@@ -5629,14 +5654,20 @@
             var list    = "";
 
              list+="<option value='N/A' data-revision='N/A' >N/A</option>";
-            if ($.trim(data['doc'])){
-              for(var ctr=0;ctr<data['doc'].length;ctr++){
-                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+            // if ($.trim(data['doc'])){
+            //   for(var ctr=0;ctr<data['doc'].length;ctr++){
+            //     list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
 
-              }
-            }
+            //   }
+            // }
 
              console.log(data['doc'])
+
+            if ($.trim(data['doc'])){
+              for(var ctr=0;ctr<data['doc'].length;ctr++){
+                list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev_no']+"</option>";
+              }
+            }
 
             $(parent).find(".class_dl_UDDoc").html(list);
           }
@@ -5679,7 +5710,7 @@
 
             var list    = "";
 
-             list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+            list+="<option value='N/A' data-revision='N/A' >N/A</option>";
             if ($.trim(data['doc'])){
               for(var ctr=0;ctr<data['doc'].length;ctr++){
                 list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
@@ -5711,6 +5742,262 @@
             $('#txt_PMDoc_rev').val('N/A');
         }
       });
+
+    //   //WI Doc
+    //   $(".class_txt_WIDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_WIDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_WIDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_WIDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_WIDoc').change(function () {
+    //     if($('#txt_WIDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_WIDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_WIDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_WIDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //OGM/VIG/IG Doc
+    //   $(".class_txt_OGM_VIG_IGDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_OGM_VIG_IGDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_OGM_VIG_IGDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //             list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_OGM_VIG_IGDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_OGM_VIG_IGDoc').change(function () {
+    //     if($('#txt_OGM_VIG_IGDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_OGM_VIG_IGDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_OGM_VIG_IGDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_OGM_VIG_IGDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //PP
+    //   $(".class_txt_PPDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_PPDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_PPDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             // list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //             list+="<option value='"+data['doc'][ctr]['document_no']+"' data-revision='"+data['doc'][ctr]['rev']+"'>"+data['doc'][ctr]['document_no']+' '+data['doc'][ctr]['series']+' '+data['doc'][ctr]['rev']+"</option>";
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_PPDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_PPDoc').change(function () {
+    //     if($('#txt_PPDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_PPDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_PPDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_PPDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //UD
+    //   $(".class_txt_UDDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_UDDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_UDDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_UDDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_UDDoc').change(function () {
+    //     if($('#txt_UDDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_UDDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_UDDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_UDDoc_rev').val('N/A');
+    //     }
+    //   });
+
+    //   //PM
+    //   $(".class_txt_PMDoc").on("keyup", function(e){
+    //     var parent        = $(this).closest(".row_container");
+    //     var data = {
+    //       "action"          : "get_PMDoc",
+    //       "device_name"     : $("#txt_device_name_lbl").val(),
+    //       "str"             : $(this).val(),
+    //     }
+    //     data = $.param(data);
+    //     $.ajax({
+    //         type      : "get",
+    //         dataType  : "json",
+    //         data      : data,
+    //         url       : "get_PMDoc",
+    //       success       : function(data){
+
+    //         var list    = "";
+
+    //          list+="<option value='N/A' data-revision='N/A' >N/A</option>";
+    //         if ($.trim(data['doc'])){
+    //           for(var ctr=0;ctr<data['doc'].length;ctr++){
+    //             list+="<option value='"+data['doc'][ctr]['doc_no']+"' data-revision='"+data['doc'][ctr]['rev_no']+"'>"+data['doc'][ctr]['doc_no']+' '+data['doc'][ctr]['doc_title']+' '+data['doc'][ctr]['rev_no']+"</option>";
+
+    //           }
+    //         }
+
+    //          console.log(data['doc'])
+
+    //         $(parent).find(".class_dl_PMDoc").html(list);
+    //       }
+    //     });
+    //   });
+
+    //   $('#txt_PMDoc').change(function () {
+    //     if($('#txt_PMDoc').val() != 0) {
+    //       var thiss = $(this);
+    //       $('#list_txt_PMDoc option').each(function(index) {
+    //           var id = $(this).val();
+    //           var name = $(this).text();
+    //           var revision = $(this).attr('data-revision');
+
+    //           if($(thiss).val()==id){
+    //           $('#txt_PMDoc_rev').val(revision);
+    //           }
+    //       });
+
+    //     }else{
+    //         $('#txt_PMDoc_rev').val('N/A');
+    //     }
+    //   });
 
 
 
@@ -7388,30 +7675,31 @@ function OutputDataCounter(api) {
           gDrawingRev = "";
         },
         success: function(data){
-          if(data['material_kitting'] != null){
-            console.log('data: ', data['material_kitting']);
+            if(data['material_kitting'] != null){
             $("#txt_po_number_lbl").val(data['material_kitting']['po_no']);
             $("#img_barcode_PO").attr('src', data['po_no_qr']);
 
             // $("#txt_device_name_lbl").val(data['material_kitting']['device_name']); // commented by JD 04-13-2024
             if(data['material_kitting']['device_info'] != null){
-              console.log('if');
+
               $("#txt_device_name_lbl").val(data['material_kitting']['device_info']['name']); // commented 04-08-2024 by Nessa
               $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
               $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
+              if(data['material_kitting']['po_no'] == 'PO16317'){
+                $("#txt_device_code_lbl").val(data['material_kitting']['device_info']['barcode']);
+              }else{
+                $("#txt_device_code_lbl").val(data['material_kitting']['device_code']);
+              }
             }else{
-
-              console.log('else');
+            //   alert('Please CHECK/ADD to the matrix');
               // mdr 09/17/2025
+
               $("#txt_device_name_lbl").val(data['material_kitting']['product_name']);
               $("#txt_po_qty_lbl").val(data['material_kitting']['po_qty']);
+                alert(data['material_kitting']['po_no'])
 
-              if(data['material_kitting']['po_no'] == 'PO13492'){
-                $("#txt_device_code_lbl").val('YEU100000251');
-              }else{
-                $("#txt_device_code_lbl").val(data['material_kitting']['item_code']);
-              }
             }
+
 
             $('#lbl_device_name').attr('device_name_print', data['device_name_print'] );
 
@@ -7491,51 +7779,7 @@ function OutputDataCounter(api) {
 
             $("#txt_ct_supplier").val('YEC');
 
-            // TEMP REMOVE Due to Request of operatr to fix it in "YEC"
-            // if(data['material_kitting']['material_issuance_details'].length > 0){
-            //     $("#txt_ct_supplier").val(data['material_kitting']['material_issuance_details'][0]['supplier']);
-            // }
-            // else{
-            //     $("#txt_ct_supplier").val('');
-            // }
-            // ..TEMP REMOVE Due to Request of operatr to fix it in "YEC"
 
-            // if(data['material_kitting']['documents_details'].length > 0){
-            //   for(let index = 0; index < data['material_kitting']['documents_details'].length; index++){
-            //     if(data['material_kitting']['documents_details'][index]['doc_no'].charAt(0).toUpperCase() == "A"){
-            //       aDrawing = data['material_kitting']['documents_details'][index]['doc_no'];
-            //       aDrawingRev = data['material_kitting']['documents_details'][index]['rev_no'];
-            //     }
-            //     else if(data['material_kitting']['documents_details'][index]['doc_no'].charAt(0).toUpperCase() == "G"){
-            //       gDrawing = data['material_kitting']['documents_details'][index]['doc_no'];
-            //       gDrawingRev = data['material_kitting']['documents_details'][index]['rev_no'];
-            //     }
-            //   }
-
-            //   $("#txt_a_drawing_no").val(aDrawing);
-            //   $("#txt_a_drawing_rev").val(aDrawingRev);
-            //   $("#txt_g_drawing_no").val(gDrawing);
-            //   $("#txt_g_drawing_rev").val(gDrawingRev);
-            // }
-            // if(data['doc_a_drawing_query'].length > 0){
-            //   aDrawing = data['doc_a_drawing_query'][0].doc_no;
-            //   aDrawingRev = data['doc_a_drawing_query'][0].rev_no;
-            // }
-            // else{
-            //   aDrawing = "";
-            //   aDrawingRev = "";
-            // }
-            // $("#txt_a_drawing_no").val(aDrawing);
-            // $("#txt_a_drawing_rev").val(aDrawingRev);
-
-            // if(data['doc_g_drawing_query'].length > 0){
-            //   gDrawing = data['doc_g_drawing_query'][0].doc_no;
-            //   gDrawingRev = data['doc_g_drawing_query'][0].rev_no;
-            // }
-            // else{
-            //   gDrawing = "";
-            //   gDrawingRev = "";
-            // }
             $("#txt_g_drawing_no").val(gDrawing);
             $("#txt_g_drawing_rev").val(gDrawingRev);
 
@@ -7546,6 +7790,7 @@ function OutputDataCounter(api) {
             // $("#txt_lot_qty").val(boxing);
           }
           else{
+
             $("#txt_po_number_lbl").val('');
             $("#txt_device_name_lbl").val('');
             $("#txt_device_code_lbl").val('');

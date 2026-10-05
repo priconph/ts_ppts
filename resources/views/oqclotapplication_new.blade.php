@@ -2037,7 +2037,7 @@ $(document).on('click','.btn-oqclotapp-history', function(e){
   });
 
   $('#btn_print_barcode').click(function(e){
-
+    alert('das')
       let image_ponum = $('#img_barcode_PO').attr('src');
       let image_lotapp = $('#img_barcode_lotno1').attr('src');
 

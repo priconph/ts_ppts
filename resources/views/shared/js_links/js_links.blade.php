@@ -54,7 +54,9 @@
 <script src="{{ asset('public/js/my_js/Rework.js') }}"></script>
 
 <!--ADDED 6/10/2021-->
-<script src="{{ asset('public/js/my_js/TSPTS.js?123456789') }}"></script>
+{{-- <script src="{{ asset('public/js/my_js/TSPTS.js?123456789') }}"></script> --}}
+<!--CHANGED 7/09/2026 by boss da-->
+<script src="{{ asset('public/js/my_js/TSPTS.js') }}?<?=time()?>"></script>
 
 <script src="{{ asset('public/js/my_js/DrawingRef.js') }}"></script>
 <script src="{{ asset('public/js/my_js/FPDetailsQRCode.js') }}"></script>

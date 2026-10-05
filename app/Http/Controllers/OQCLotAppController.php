@@ -73,6 +73,11 @@ class OQCLotAppController extends Controller
         }
         // return $list_of_name_and_qtt_done;
         // 05242024 by Nessa --> change $oqcLotApp[0]->lot_batch_no to $runcards[0]->runcard_no
+
+        // return explode(' - ', $device[0]->name)[0];
+        // if($device[0]->name ){
+
+        // }
           $QrCode = QrCode::format('png')->errorCorrection('H')->size(200)->generate($oqcLotApp[0]->po_no . '
         ' . explode(' - ', $device[0]->name)[0] . '
         ' . $runcards[0]->runcard_no . '
@@ -112,6 +117,7 @@ class OQCLotAppController extends Controller
         $_stations__ = [];
         // change $lot_start_counter to total trays count before the trays in the lot selected
         if( $prd_runcards[0]->po_qty <= 99 ){
+        // if( $prd_runcards[0]->po_qty <= 50000 ){
             $lot_start_counter = 0;
             // $sticker_cnt = 1;
             $current_lot_id_is_selected = false;
@@ -136,7 +142,35 @@ class OQCLotAppController extends Controller
                     }
                 }
             }
-        } else {
+        }
+        //clark new else if 09/09/2026
+        // else if( $prd_runcards[0]->po_qty <= 50000 ){
+        //     $lot_start_counter = 0;
+        //     // $sticker_cnt = 1;
+        //     $current_lot_id_is_selected = false;
+
+        //     for ($i=0; $i < count($prd_runcards); $i++) {
+
+        //         if( !$current_lot_id_is_selected ) {
+        //             if( $request->id == $prd_runcards[$i]->id )
+        //                 $current_lot_id_is_selected = true;
+
+        //             $_stations = ProductionRuncardStation::select('*', DB::raw("SUM(qty_output) as ttl_qtt"))->where('production_runcard_id', $prd_runcards[$i]->id)->where('status', 1)->limit(1)->get();
+        //             $_stations__[] = $_stations;
+
+        //             if( $request->id != $prd_runcards[$i]->id ){
+        //                 $_ttl_qtt = $_stations[0]->ttl_qtt;
+        //                 for ($mm=0; $mm < 100; $mm++) {
+        //                     $_ttl_qtt = $_ttl_qtt - (int)$device[0]->boxing;
+        //                     $lot_start_counter++;
+        //                     if( $_ttl_qtt <= 0  )
+        //                         break;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+         else {
             $data = [];
 
             // $lbl = 'PO No.: ' . $oqcLotApp[0]->po_no . '<br>Device Name: ' . explode(' - ', $device[0]->name)[0]. '<br>Runcard/Lot No.: ' . $oqcLotApp[0]->lot_batch_no . '<br>Serial No./WW/Print Lot No.: ' . $oqcLotApp[0]->print_lot . '<br>Actual Lot Quantity: ' . $ttl . '<br>No. of Label of how many tray/boxes: ' . $prd_runcards_counter[$request->id] . '/' . $sticker_cnt;
@@ -248,6 +282,255 @@ class OQCLotAppController extends Controller
 
             $lbl = 'PO no.: ' . $oqcLotApp[0]->po_no . '<br>Device name: ' . explode(' - ', $device[0]->name)[0]. '<br>Lot no.: ' . $runcards[0]->runcard_no . '<br>FVI name: ' . $fviname . '<br>Actual lot quantity: ' . $ttl . '<br>Quantity per tray: ' . $qtt_tray . '<br>Count of tray/total tray per lot: ' . $prd_runcards_counter[$request->id] . '/' . $sticker_cnt;
         }
+        return response()->json(['QrCode' => $QrCode, 'label' => $lbl, 'label_hidden' => $data, '_stations__' => $_stations__,'obj_qr_detail'=>$obj_qr_detail, 'test_clark'=>ceil(  (int)$device[0]->ship_boxing / (int)$device[0]->boxing )]);
+    }
+    public function generate_qrcode_for_oqc_lot_app_yest(Request $request)
+    {
+        // return 'working function';
+        // 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+        $device_name = $request->device_name;
+       $device_name = CommonController::getInstance()->validate_device_name($device_name);
+        $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->id)->get();
+        $runcards = ProductionRuncard::where('id', $request->id)->get(); // 05242024 by Nessa
+        $device = Device::where('name', $device_name)->where('status', 1)->get();
+        $result = ProductionRuncardStation::where('production_runcard_id', $request->id)->where('status', 1)->get();
+
+        $ttl = 0;
+        for ($i=0; $i < count($result); $i++)
+            $ttl = $ttl + $result[$i]->qty_output;
+
+            $list_of_name_and_qtt_done = ProductionRuncardStation::with('ct_area_info', 'terminal_area_info')->select('*', DB::raw("SUM(qty_output) as ttl_qtt"))->where('production_runcard_id', $request->id)->where('status', 1)->groupBy('ct_area', 'terminal_area')->get();
+        // if( count($list_of_name_and_qtt_done) == 2 ){
+        //     if( (int)$list_of_name_and_qtt_done[1]->ttl_qtt > (int)$list_of_name_and_qtt_done[0]->ttl_qtt ){
+        //         $hold = $list_of_name_and_qtt_done[1];
+        //         $list_of_name_and_qtt_done[1] = $list_of_name_and_qtt_done[0];
+        //         $list_of_name_and_qtt_done[0] = $hold;
+        //     }
+        // }
+
+        for ($i=0; $i < count($list_of_name_and_qtt_done); $i++) {
+            for ($j=0; $j < count($list_of_name_and_qtt_done); $j++) {
+                if( (int)$list_of_name_and_qtt_done[$i]->ttl_qtt > (int)$list_of_name_and_qtt_done[$j]->ttl_qtt ){
+                    $hold = $list_of_name_and_qtt_done[$i];
+                    $list_of_name_and_qtt_done[$i] = $list_of_name_and_qtt_done[$j];
+                    $list_of_name_and_qtt_done[$j] = $hold;
+                }
+            }
+        }
+        // return $list_of_name_and_qtt_done;
+        // 05242024 by Nessa --> change $oqcLotApp[0]->lot_batch_no to $runcards[0]->runcard_no
+        $QrCode = QrCode::format('png')->errorCorrection('H')->size(200)->generate($oqcLotApp[0]->po_no . '
+        ' . explode(' - ', $device[0]->name)[0] . '
+        ' . $runcards[0]->runcard_no . '
+        ' . $oqcLotApp[0]->print_lot . '
+        ' . $ttl . '
+        ' . $device[0]->ship_boxing);
+        $QrCode = "data:image/png;base64," . base64_encode($QrCode);
+
+        $po_no = ProductionRuncard::where('id', $request->id)->get()[0]->po_no;
+        $prd_runcards = ProductionRuncard::where('po_no', $po_no)->orderBy('id')->get();
+        $prd_runcards_counter = [];
+        for ($i=0; $i < count($prd_runcards); $i++)
+            $prd_runcards_counter[ $prd_runcards[$i]->id ] = ($i+1);
+
+
+        $cnt = ceil($prd_runcards[0]->po_qty / $device[0]->ship_boxing);
+
+        // return $cnt;
+
+        $sticker_cnt = ceil($device[0]->ship_boxing / $device[0]->boxing);
+        if( $device[0]->ship_boxing > $ttl )
+            $sticker_cnt = ceil($ttl / $device[0]->boxing);
+
+        $data = [];
+
+        $content = '';
+        $serial_no = "";
+        $serial_no_html = "";
+        if( $oqcLotApp[0]->print_lot != 'N/A' ){
+            $serial_no = $oqcLotApp[0]->print_lot . "
+";
+            $serial_no_html = $oqcLotApp[0]->print_lot . '</b><br>';
+        }
+        // $oqcLotApp[0]->print_lot;
+        $lot_number = (int)(explode('-', $oqcLotApp[0]->lot_batch_no)[1]);
+        $lot_start_counter = ( $lot_number - 1 ) * (  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
+
+
+        $_stations__ = [];
+        // INSTEAD OF READING THE MATRIX:change $lot_start_counter to total trays count before the trays in the lot selected
+        if( $prd_runcards[0]->po_qty <= 99 || $prd_runcards[0]->po_no = '450257796000010'){
+
+            // return 'true';
+            $lot_start_counter = 0;
+            // $sticker_cnt = 1;
+            $current_lot_id_is_selected = false;
+
+            for ($i=0; $i < count($prd_runcards); $i++) {
+
+                if( !$current_lot_id_is_selected ) {
+                    if( $request->id == $prd_runcards[$i]->id )
+                        $current_lot_id_is_selected = true;
+
+                    $_stations = ProductionRuncardStation::select('*', DB::raw("SUM(qty_output) as ttl_qtt"))->where('production_runcard_id', $prd_runcards[$i]->id)->where('status', 1)->limit(1)->get();
+
+                    $_stations__[] = $_stations;
+
+                    if( $request->id != $prd_runcards[$i]->id ){
+
+                        $_ttl_qtt = $_stations[0]->ttl_qtt;
+
+                        for ($mm=0; $mm < 100; $mm++) {
+                            $_ttl_qtt = $_ttl_qtt - (int)$device[0]->boxing;
+                            $lot_start_counter++;
+                            if( $_ttl_qtt <= 0  ){
+    // return 'false';
+
+
+                                break;
+                            }
+    // return 'true';
+
+                        }
+                    }
+                }
+
+            }
+        } else {
+
+            $data = [];
+
+
+            $content = '';
+            $serial_no = "";
+            $serial_no_html = "";
+            if( $oqcLotApp[0]->print_lot != 'N/A' ){
+                $serial_no = $oqcLotApp[0]->print_lot . "
+    ";
+                $serial_no_html = $oqcLotApp[0]->print_lot . '</b><br>';
+            }
+
+            // return $oqcLotApp;
+            $lot_number = explode('-', $oqcLotApp[0]->lot_batch_no);
+            $lot_number = (int)($lot_number[count($lot_number)-1]);
+            // $lot_number = (int)(explode(' ', $oqcLotApp[0]->lot_batch_no)[1]);
+            // $lot_start_counter = ( $lot_number - 1 ) * (  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
+            $lot_start_counter = ( $lot_number - 1 ) * ceil(  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
+            // return $lot_number;
+            // return $lot_start_counter;
+            $ttl_lot_qtt_box = 0;
+            }
+            // echo json_encode($lot_start_counter );
+        // end
+        // return $lot_start_counter . " - " . ( $lot_number - 1 ) . " - " . $device[0]->ship_boxing . " - " . $device[0]->boxing . " - " . (  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
+        for ($i=1; $i <= $sticker_cnt; $i++) {
+
+            $name = '';
+           $qtt_tray = $i * (int)($device[0]->boxing);
+            $index = 0;
+
+            $output_qty_count = 0;
+            for ($index_name=0; $index_name < count($list_of_name_and_qtt_done); $index_name++) {
+                $output_qty_count += $list_of_name_and_qtt_done[$index_name]->ttl_qtt;
+                if( $output_qty_count >= $qtt_tray ){
+                    $index = $index_name;
+                    break;
+                }
+                else if( $index_name == count($list_of_name_and_qtt_done)-1 ){
+                    $index = $index_name;
+                    break;
+                }
+            }
+
+           $list_of_name_and_qtt_done;
+
+            if( $list_of_name_and_qtt_done[$index]->ct_area == $list_of_name_and_qtt_done[$index]->terminal_area ){
+
+
+                $mm = explode(' ', $list_of_name_and_qtt_done[$index]->ct_area_info->name);
+                // $name .= $mm[0] . ' ' . $mm[2][0] . '.';
+                if( count($mm) == 3 ){
+                    // return 1;
+
+                    $name .= $mm[0] . ' ' . $mm[2][0] . '.';
+                }
+                else{
+                    // return 2;
+
+                    $name .= $mm[0] . ' ' . $mm[2][0] . '.';
+                }
+            }else{
+                $mm = explode(' ', $list_of_name_and_qtt_done[$index]->ct_area_info->name);
+                // $name .= $mm[0] . ' ' . $mm[2][0] . '., ';
+                if( count($mm) == 3 ){ //06-04-2026
+                    $name .= $mm[0] . ' ' . $mm[2][0] . '., ';
+                    // return 3;
+                }else{
+                    // return 4;
+                  $name .= $mm[0] . ' ' . ($mm[2][0] ?? '') . '.,';
+                //   $name .= $mm[0] . ' ' . $mm[0] . '.,';
+                //   $name .= "";
+                }
+                $mm = explode(' ', $list_of_name_and_qtt_done[$index]->terminal_area_info->name);
+                // $name .= $mm[0] . ' ' . $mm[2][0] . '.';
+                if( count($mm) == 3 ){
+                    // return 5;
+                    $name .= $mm[0] . ' ' . $mm[2][0] . '.';
+                }
+
+                else{
+                    // return 6;
+                    $name .= $mm[0] . ' ' . $mm[1][0] . '.';
+                }
+
+
+              $name;
+            }
+            $fviname = strtoupper($name);
+            // echo json_encode($fviname);
+            $fviname = $name;
+
+
+            if( $ttl >= $qtt_tray )
+                $qtt_tray = (int)($device[0]->boxing);
+            else
+                $qtt_tray = (int)($device[0]->boxing) - ($qtt_tray - $ttl);
+
+        //   return ($lot_start_counter + $i) . '/' . ($lot_start_counter + $sticker_cnt);
+        //   return $lot_start_counter;
+          $arr_qr_detail = [
+                'oqc_lotapp_po_no' => $oqcLotApp[0]->po_no,
+                'oqc_lotapp_device' => explode(' - ', $device[0]->name)[0],
+                'oqc_lotapp_lot_batch_no' => $oqcLotApp[0]->lot_batch_no,
+                'oqc_lotapp_emp_name' => $name,
+                'oqc_lotapp_serial_no' => $serial_no . $ttl,
+                'oqc_lotapp_qtt_tray' => $qtt_tray,
+                'oqc_lotapp_lot_sticker_cnt' => ($lot_start_counter + $i) . '/' . ($lot_start_counter + $sticker_cnt),
+            ];
+
+            $obj_qr_detail = json_encode($arr_qr_detail);
+            $qrcode = QrCode::format('png')
+            ->size(250)->errorCorrection('H')
+            ->generate($obj_qr_detail);
+            $lcl_QrCode = "data:image/png;base64," . base64_encode($qrcode);
+
+            //Enable if the Device Name is need to be wrap
+            // $word_wrap = wordwrap(explode(' - ', $device[0]->name)[0],15,"<br>\n");
+            // $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'.$word_wrap . '</b><br>' .
+          $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'. explode(' - ', $device[0]->name)[0]. '</b><br>' .
+                $runcards[0]->runcard_no . '</b><br>' .
+                $fviname . '<br>' .
+                $serial_no_html .
+                $ttl . '</b><br>' .
+                $qtt_tray . '</b><br>' .
+                // 8 . '</b><br>' . // use this for temporary fix of qtt per tray, also change the qtt_tray in lcl_QrCode 06-11-2023
+                ($lot_start_counter + $i) . '/' . ($lot_start_counter + $sticker_cnt).'</b>');
+                // (1) . '/' . (1).'</b>'); // tempo 08102023
+
+           $lbl = 'PO no.: ' . $oqcLotApp[0]->po_no . '<br>Device name: ' . explode(' - ', $device[0]->name)[0]. '<br>Lot no.: ' . $runcards[0]->runcard_no . '<br>FVI name: ' . $fviname . '<br>Actual lot quantity: ' . $ttl . '<br>Quantity per tray: ' . $qtt_tray . '<br>Count of tray/total tray per lot: ' . $prd_runcards_counter[$request->id] . '/' . $sticker_cnt;
+
+        }
+
         return response()->json(['QrCode' => $QrCode, 'label' => $lbl, 'label_hidden' => $data, '_stations__' => $_stations__,'obj_qr_detail'=>$obj_qr_detail]);
     }
 
@@ -296,7 +579,7 @@ class OQCLotAppController extends Controller
             $sticker_cnt = ceil($ttl / $device[0]->boxing);
 
         // $sticker_cnt change to total count of trays from first lot to lot selected
-        if( $prd_runcards[0]->po_qty <= 99 ){
+        if( $prd_runcards[0]->po_qty <= 99  || $prd_runcards[0]->po_no = '450257796000010'){
             $sticker_cnt = 1;
         }
         // end
@@ -316,7 +599,7 @@ class OQCLotAppController extends Controller
         $lot_start_counter = ( $lot_number - 1 ) * (  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
 
         // change $lot_start_counter to total trays count before the trays in the lot selected
-        if( $prd_runcards[0]->po_qty <= 99 ){
+        if( $prd_runcards[0]->po_qty <= 99 || $prd_runcards[0]->po_no = '450257796000010'){
             // $sticker_cnt = 0;
             $lot_start_counter = 0;
             $current_lot_id_is_selected = false;
@@ -627,7 +910,7 @@ class OQCLotAppController extends Controller
 
     public function bk_generate_qrcode_for_oqc_lot_app(Request $request)
     { //TEST
-        //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+        //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
         $device_name = $request->device_name;
         $device_name = CommonController::getInstance()->validate_device_name($device_name);
         $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->id)->get();
@@ -672,7 +955,7 @@ class OQCLotAppController extends Controller
 ' . $prd_runcards_counter[$request->id] . '/' . $cnt);
             $lcl_QrCode = "data:image/png;base64," . base64_encode($lcl_QrCode);
 
-            $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'. explode(' - ', $device[0]->name)[0]. '</b><br>' .
+         $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'. explode(' - ', $device[0]->name)[0]. '</b><br>' .
                 $oqcLotApp[0]->lot_batch_no . '</b><br>' .
                 $oqcLotApp[0]->print_lot . '</b><br>' .
                 $ttl . '</b><br>' .
@@ -719,7 +1002,8 @@ class OQCLotAppController extends Controller
             'wbs_kitting.device_info'
         ])
         ->where('po_no',$request['po_no'])
-        ->whereNull('deleted_at') // MIGZ 03-05-24 Condition to hide runcards
+        ->whereNull('deleted_at') // Condition to hide runcards
+
         // ->where(function($query){
         //     $query
         //         ->where('status', 7)
@@ -735,11 +1019,10 @@ class OQCLotAppController extends Controller
 
         // return $request['device_name'];
 
-        //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+        //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
         $wbs_device_name = $request['device_name'];
         $device_name_print = 'not found';
         $device_name_print = CommonController::getInstance()->validate_device_name($wbs_device_name);
-        // return $wbs_device_name;
 
         if( count($oqc_inspections) > 0 ){
           $device = Device::where('name', $device_name_print)->where('status', 1)->get();
@@ -1056,8 +1339,18 @@ class OQCLotAppController extends Controller
 
             return $result;
         })
+         ->addColumn('partial_qty', function($oqc_inspection){
+            $result = "";
+            if ($oqc_inspection->oqc_details != null){
+                $result = $oqc_inspection->oqc_details->partial_qty;
+            }else{
+                $result ='---';
+            }
 
-        ->rawColumns(['action','status_raw','fvo_raw','output_qty_raw','subm_raw','sub_lot_raw'])
+            return $result;
+        })
+
+        ->rawColumns(['action','status_raw','fvo_raw','output_qty_raw','subm_raw','sub_lot_raw',])
         // ->rawColumns(['action','status_raw','fvo_raw','output_qty_raw','subm_raw','sub_lot_raw','packing_code_raw'])
         ->make(true);
     }
@@ -1309,6 +1602,9 @@ class OQCLotAppController extends Controller
                 ->orWhere('status', 8);
         })
         ->get();
+
+        // return 'asd';
+        // return $runcard_details;
         //- sub lot no.
 
         // return $runcard_details[0]->yeu_kitting;
@@ -1325,7 +1621,7 @@ class OQCLotAppController extends Controller
                 $device_name = $runcard_details[0]->wbs_kitting->device_name;
             }
 
-            //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+            //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
             $wbs_device_name = CommonController::getInstance()->validate_device_name($device_name);
             $devices = Device::where('name', $wbs_device_name)->get()->take(1);
 
@@ -1351,10 +1647,10 @@ class OQCLotAppController extends Controller
     // Get PO Details from WBS kitting
     public function get_po_details(Request $request){
 
-        // return 'WORKING';
+        // return 'asd';
 
         $subPO = substr($request->po, 0, 15); // added by migs and jd 11-06-2023
-         $po_details = ProductionRuncard::with([
+        $po_details = ProductionRuncard::with([
         'wbs_kitting',
         'wbs_kitting.device_info'])
         ->where('po_no', $subPO)
@@ -1426,7 +1722,9 @@ class OQCLotAppController extends Controller
 
     // Add
     public function add_oqc_lot_app(Request $request){
+        // return 'qweqwe';
         date_default_timezone_set('Asia/Manila');
+
 
         $user_exist = User::where('id', $request->add_packing_operator_name)->get();
 
@@ -1476,7 +1774,7 @@ class OQCLotAppController extends Controller
 
             DB::beginTransaction();
 
-            if ( $request->name_OutputQty == $request->name_LotQty ){
+            if ( $request->name_OutputQty == $request->name_LotQty ){ // detect if partial lot or not.
                 try{
 
                     $runcard = ProductionRuncard::find($request->hidden_runcard_id);
@@ -1484,12 +1782,14 @@ class OQCLotAppController extends Controller
                     // return $runcard;
 
                     if( isset($runcard->id) ){
-                        //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+                        //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
                         $device_name = $runcard->device_name;
+
                         $dn = $runcard->device_name;
                         $d_name = Device::where('name', $dn)->get();
                         $device_name = CommonController::getInstance()->validate_device_name($device_name);
                         $device = Device::where('name', $device_name)->get();
+                        // return $device;
                         if( count($device)>0 ){
 
                             OQCLotApp::insert([
@@ -1551,16 +1851,61 @@ class OQCLotAppController extends Controller
                 try{
 
                     $runcard = ProductionRuncard::find($request->hidden_runcard_id);
-
+                    // return $data;
                     // return $runcard;
                     if( isset($runcard->id) ){
-                        //TODO: MIGZ 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
+                        //TODO:09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
                         $device_name = $runcard->device_name;
                         $device_name = CommonController::getInstance()->validate_device_name($device_name);
-                        $device = Device::where('name', $device_name)->get();
+                        $device = Device::where('name', $device_name)
+                        ->orderBy('id','desc')
+                        ->get();
 
-                        // return $device_name;
+                        // boss da
+                        $outputQty = (int) $request->name_OutputQty;
+                        $lotQty = (int) $request->name_LotQty;
+                        $trayLotQty = (int) $device[0]->boxing;
+                        $actualQty = (int) $request->name_OutputQty;
+                        $partialQty = $request->hidden_partial_qty;
+
+                        // return $trayLotQty;
+
+                        // Detect if actual quantity has a partial
+                        $remainder = $actualQty % $trayLotQty;
+
+
                         if( count($device)>0 ){
+
+                            // First request: detect partial lot
+                            if ($remainder > 0 && empty($partialQty)) {
+
+                                return response()->json([
+                                    'result' => 'partial_lot',
+                                    'message' => 'This is a partial lot. Please enter the partial quantity.',
+                                    'actual_qty' => $actualQty,
+                                    'tray_lot_qty' => $trayLotQty,
+                                    'remainder' => $remainder
+                                ]);
+
+
+                            }
+
+                            // Second request: user already entered partial quantity
+                            if ($remainder > 0 && !empty($partialQty)) {
+
+                                if ($partialQty <= 0) {
+                                    return response()->json([
+                                        'error_msg' => 'Partial quantity must be greater than 0.'
+                                    ]);
+                                }
+
+                                if ($partialQty != $remainder) {
+                                    return response()->json([
+                                        'error_msg' => 'Partial quantity must be exactly ' . $remainder . '.',
+                                        'result' => 'x'
+                                    ]);
+                                }
+                            }
 
                             OQCLotApp::insert([
                                 'fkid_runcard' => $request->hidden_runcard_id,
@@ -1577,6 +1922,7 @@ class OQCLotAppController extends Controller
                                 'print_lot' => $request->name_PrintLotNo,
                                 'lot_qty' => $request->name_LotQty,
                                 'output_qty' => $request->name_OutputQty,
+                                'partial_qty' => $partialQty,
                                 'direction' => ($request->name_UrgentDirection)?$request->name_UrgentDirection:'N/A',
                                 'Adrawing' => $request->name_ADrawing,
                                 'Gdrawing' => $request->name_GDrawing,
