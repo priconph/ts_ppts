@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Model;
+use Illuminate\Database\Eloquent\Model;
 
 use App\Model\AssemblyLine;
 use App\Model\MaterialIssuanceSubSystem;
@@ -9,13 +10,9 @@ use App\Model\OQCInspection_2;
 use App\Model\OQCInspection;
 use App\Model\oqcLotApp;
 use App\Model\oqcVIR;
-use App\Model\MaterialIssuanceSubSystem;
 use App\Model\ProductionRuncardStation;
 use App\Model\ProdRuncardMaterialList;
-use App\Model\MaterialProcess;
 use App\Model\ProdRuncardAccessory;
-use App\Model\OQCInspection_2;
-
 use App\Model\TSPTSOqcVir;
 use App\Model\TSPTSPackingConfirmation;
 use App\Model\TSPTSPreliminaryPackingInspection;
@@ -26,7 +23,6 @@ use App\Model\TSPTSFinalPackingInspectionTrfficQC;
 use App\Model\TSPTSFinalPackingInspectionTrfficQC_QC;
 use App\Model\YeuKitting;
 
-use App\Model\AssemblyLine;
 
 class ProductionRuncard extends Model
 {

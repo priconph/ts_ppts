@@ -2017,28 +2017,47 @@
     </div>
     <!-- /.modal-dialog -->
   </div>
-
-
-  <div class="modal fade" id="modalScan_EmployeeID" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header border-bottom-0 pb-0">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body pt-0">
-          <div class="text-center text-secondary">
-          Please scan your employee id.
-          <br>
-          <br>
-          <h1><i class="fa fa-barcode fa-lg"></i></h1>
+  <div class="modal fade" id="modalScanEmployeeId" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="text-center text-secondary">
+                <div id="alert_notif"></div>
+            </div>
           </div>
-          <input type="text" id="modalScan_EmployeeID_id" class="hidden_scanner_input" autocomplete="off">
+          <div class="modal-body pt-0">
+                <div class="card shadow w-50 mx-auto">
+                    <div class="card-body">
+                        <div class="text-center text-secondary">
+                            Please scan your ID.
+                        <br>
+                        <br>
+                        <h1><i class="fa fa-qrcode fa-lg"></i></h1>
+                            <input type="text" id="id_search_employee_id" class="hidden_scanner_input" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    {{-- <div class="modal fade" id="modalScanEmployeeIdx" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0 pb-0">
+        </div>
+        <div class="modal-body pt-0">
+            <div class="text-center text-secondary">
+              Please scan your ID.
+              <br><br>
+              <h1><i class="fa fa-qrcode fa-lg"></i></h1>
+            </div>
+            <input type="text" id="txt_employee_number_scanner" class="hidden_scanner_input">
+          </div>
+          <div class="modal-footer">
+        </div>
+    </div>
+  </div> --}}
 
   <div class="modal fade" id="modal_to_inform_user_for_pilot_run" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
@@ -2063,8 +2082,32 @@
       </div>
     </div>
   </div>
+  
 
-  <!-- /.content-wrapper -->
+     <!-- Modal -->
+    {{-- <div class="modal fade" id="modalScanEmployeeId" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header border-bottom-0 pb-0">
+            <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body pt-0">
+            <div class="text-center text-secondary">
+              Please scan your ID.
+              <br><br>
+              <h1><i class="fa fa-qrcode fa-lg"></i></h1>
+            </div>
+            <input type="text" id="txt_employee_number_scanner" class="hidden_scanner_input">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div> --}}
 
   <!-- /.content-wrapper -->
 
@@ -2234,6 +2277,8 @@
 
     </textarea>
 
+   
+
   @endsection
 
   @section('js_content')
@@ -2356,7 +2401,7 @@
         });
     }
 
-    function fnValidateEmployeeId(employee_id){
+    function fnValidateEmployeeIdRuncard(employee_id){
         console.log('fnValidateEmployeeId OK',employee_id);
         $.ajax({
             type: 'GET',
@@ -4953,7 +4998,7 @@
                 case 'scan_employee_no_for_edit_runcard_lotno':
                   scannedValue = $("#txtSearchPoTransLotNo").val();
                   $(this).focus();
-                  fnValidateEmployeeId(scannedValue);
+                  fnValidateEmployeeIdRuncard(scannedValue);
                   $("#txtScannedEmployeeNo").val(scannedValue.trim());
                 break;
 
@@ -7657,7 +7702,16 @@ function OutputDataCounter(api) {
           },
         });
       }
+    $(document).on('keypress',function(e){ //enable this
+        if( ($("#modalScanEmployeeId").data('bs.modal') || {})._isShown ){
+            $('#id_search_employee_id').focus();
 
+            let employee_id = $('#id_search_employee_id').val();
+            if( e.keyCode == 13 && employee_id !=''){
+                fnValidateEmployeeId(employee_id); //Located at User.js
+            }
+        }
+    });
     function GetMaterialKitting(){
       $.ajax({
         url: "get_wbs_material_kitting_rev",
@@ -7675,7 +7729,24 @@ function OutputDataCounter(api) {
           gDrawingRev = "";
         },
         success: function(data){
-            if(data['material_kitting'] != null){
+        if(data['material_kitting']['device_info'] === null){
+            $('#modalScanEmployeeId').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            let notif_alert = ` <p style="font-size:50px; color:red;"><i class="fa fa-exclamation-triangle text-danger"></i> WARNING!, Please CHECK the Matrix!</p>
+            <p style="font-size:50px; color:red;"><strong>CALL THE ATTENTION OF IMMEDIATE SUPERVISOR</strong></p>`;
+            $('#alert_notif').html(notif_alert);
+            $('#modalScanEmployeeId').modal('show');  //enable this
+            $("#txt_po_number_lbl").val('');
+            $("#txt_device_name_lbl").val('');
+            $("#txt_device_code_lbl").val('');
+            $("#txt_po_qty_lbl").val('');
+            $("#txt_lot_qty").val("");
+            $("#tbl_prod_runcard").hide();
+            return;
+        }
+        if(data['material_kitting'] != null){
             $("#txt_po_number_lbl").val(data['material_kitting']['po_no']);
             $("#img_barcode_PO").attr('src', data['po_no_qr']);
 
