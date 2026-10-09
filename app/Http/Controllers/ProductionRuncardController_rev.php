@@ -3294,6 +3294,8 @@ class ProductionRuncardController_rev extends Controller
     }
 
     public function get_prod_runcard_by_id(Request $request){
+        return 'true2';
+
         date_default_timezone_set('Asia/Manila');
         $prod_runcard = ProductionRuncard::with([
                                 'prod_runcard_material_list' => function($query){

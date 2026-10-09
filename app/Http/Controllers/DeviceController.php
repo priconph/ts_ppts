@@ -146,10 +146,10 @@ class DeviceController extends Controller
             try{
                 Device::insert([
                     'name' => $request->name,
-                    // 'process' => $request->process,
-                    // 'boxing' => $request->boxing,
-                    // 'ship_boxing' => $request->ship_boxing,
-                    // 'type' => $request->type,
+                    'process' => $request->process,
+                    'boxing' => $request->boxing,
+                    'ship_boxing' => $request->ship_boxing,
+                    'type' => $request->type,
                     // 'label' => $request->label,
                     'status' => 1,
                     'barcode' => $request->barcode,
@@ -167,7 +167,7 @@ class DeviceController extends Controller
             catch(\Exception $e) {
                 DB::rollback();
                 // throw $e;
-                return response()->json(['result' => "0"]);
+                return response()->json(['result' => "0",'error'=>$e]);
             }
         }
     }

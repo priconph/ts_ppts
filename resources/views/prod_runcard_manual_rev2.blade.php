@@ -2041,24 +2041,26 @@
         </div>
       </div>
     </div>
-    {{-- <div class="modal fade" id="modalScanEmployeeIdx" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal fade" id="modalScan_EmployeeID" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header border-bottom-0 pb-0">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body pt-0">
-            <div class="text-center text-secondary">
-              Please scan your ID.
-              <br><br>
-              <h1><i class="fa fa-qrcode fa-lg"></i></h1>
-            </div>
-            <input type="text" id="txt_employee_number_scanner" class="hidden_scanner_input">
+          <div class="text-center text-secondary">
+          Please scan your employee id.
+          <br>
+          <br>
+          <h1><i class="fa fa-barcode fa-lg"></i></h1>
           </div>
-          <div class="modal-footer">
+          <input type="text" id="modalScan_EmployeeID_id" class="hidden_scanner_input" autocomplete="off">
         </div>
+      </div>
     </div>
-  </div> --}}
-
+  </div>
   <div class="modal fade" id="modal_to_inform_user_for_pilot_run" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -2084,30 +2086,7 @@
   </div>
   
 
-     <!-- Modal -->
-    {{-- <div class="modal fade" id="modalScanEmployeeId" data-formid="" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header border-bottom-0 pb-0">
-            <h5 class="modal-title" id="exampleModalLongTitle"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body pt-0">
-            <div class="text-center text-secondary">
-              Please scan your ID.
-              <br><br>
-              <h1><i class="fa fa-qrcode fa-lg"></i></h1>
-            </div>
-            <input type="text" id="txt_employee_number_scanner" class="hidden_scanner_input">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div> --}}
+  
 
   <!-- /.content-wrapper -->
 
@@ -7712,6 +7691,7 @@ function OutputDataCounter(api) {
             }
         }
     });
+    
     function GetMaterialKitting(){
       $.ajax({
         url: "get_wbs_material_kitting_rev",

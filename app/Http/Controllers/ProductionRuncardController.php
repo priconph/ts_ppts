@@ -3267,6 +3267,7 @@ class ProductionRuncardController extends Controller
     }
 
     public function get_prod_runcard_by_id(Request $request){
+        // return 'WORKING FUNCTION ';
         date_default_timezone_set('Asia/Manila');
         $prod_runcard = ProductionRuncard::with([
                                 'prod_runcard_material_list' => function($query){
@@ -4822,6 +4823,7 @@ class ProductionRuncardController extends Controller
 
     public function edit_prod_runcard_station1(Request $request){
         date_default_timezone_set('Asia/Manila');
+        return 'true';
         $return_title = '<i class="fa fa-check-circle text-success"></i> Saved';
         $return_body = 'Record has been saved.';
         $result = false;

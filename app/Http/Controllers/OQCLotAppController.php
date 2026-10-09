@@ -37,19 +37,58 @@ class OQCLotAppController extends Controller
             return response()->json(['result' => 'Something went wrong.']);
         }
     }
+    /**
+     * Safely get the first character of a string, returns '' if empty
+     */
+    public function safeInitial($str) {
+        return strlen($str) > 0 ? $str[0] : '';
+    }
 
+    /**
+     * Format a full name into abbreviated form
+     * Examples:
+     *   "MYDEN V. MOLIN"   => "MYDEN V."
+     *   "Miguel Legaspi"   => "MIGUEL L."
+     */
+    public function formatName($fullName) {
+        // Filter out empty parts caused by extra spaces (no arrow function)
+        $parts = array_values(array_filter(
+            explode(' ', trim($fullName)),
+            function($p) { return $p !== ''; }
+        ));
+
+        $count = count($parts);
+
+        if ($count === 0) {
+            return '';
+        }
+
+        if ($count === 1) {
+            return strtoupper($parts[0]);
+        }
+
+        if ($count === 2) {
+            // "Juan Cruz" => "JUAN C."
+            $initial = OqcLotAppController::safeInitial($parts[1]);
+            return strtoupper($parts[0] . ($initial ? ' ' . $initial . '.' : ''));
+        }
+
+        // 3 or more: use last part as initial
+        $initial = OqcLotAppController::safeInitial($parts[$count - 1]);
+        return strtoupper($parts[0] . ($initial ? ' ' . $initial . '.' : ''));
+    }
     public function generate_qrcode_for_oqc_lot_app(Request $request)
     { //working function
         // return 'working function';
         // 09-04-24 Remove Burn-in & Test, if the Device Name in WBS Issuance & Kitting
         $device_name = $request->device_name;
-       $device_name = CommonController::getInstance()->validate_device_name($device_name);
+        $device_name = CommonController::getInstance()->validate_device_name($device_name);
         $oqcLotApp = oqcLotApp::where('fkid_runcard', $request->id)->get();
         // return $oqcLotApp;
         $runcards = ProductionRuncard::where('id', $request->id)->get(); // 05242024 by Nessa
         $device = Device::where('name', $device_name)->where('status', 1)->get();
         // return $device;
-      $result = ProductionRuncardStation::where('production_runcard_id', $request->id)->where('status', 1)->get();
+        $result = ProductionRuncardStation::where('production_runcard_id', $request->id)->where('status', 1)->get();
         $ttl = 0;
         for ($i=0; $i < count($result); $i++)
             $ttl = $ttl + $result[$i]->qty_output;
@@ -78,7 +117,7 @@ class OQCLotAppController extends Controller
         // if($device[0]->name ){
 
         // }
-          $QrCode = QrCode::format('png')->errorCorrection('H')->size(200)->generate($oqcLotApp[0]->po_no . '
+      $QrCode = QrCode::format('png')->errorCorrection('H')->size(200)->generate($oqcLotApp[0]->po_no . '
         ' . explode(' - ', $device[0]->name)[0] . '
         ' . $runcards[0]->runcard_no . '
         ' . $oqcLotApp[0]->print_lot . '
@@ -112,7 +151,6 @@ class OQCLotAppController extends Controller
             $serial_no_html = $oqcLotApp[0]->print_lot . '</b><br>';
         }
         $lot_number = (int)(explode('-', $oqcLotApp[0]->lot_batch_no)[1]);
-
         $lot_start_counter = ( $lot_number - 1 ) * (  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
         $_stations__ = [];
         // change $lot_start_counter to total trays count before the trays in the lot selected
@@ -143,6 +181,7 @@ class OQCLotAppController extends Controller
                 }
             }
         }
+
         //clark new else if 09/09/2026
         // else if( $prd_runcards[0]->po_qty <= 50000 ){
         //     $lot_start_counter = 0;
@@ -171,6 +210,7 @@ class OQCLotAppController extends Controller
         //     }
         // }
          else {
+
             $data = [];
 
             // $lbl = 'PO No.: ' . $oqcLotApp[0]->po_no . '<br>Device Name: ' . explode(' - ', $device[0]->name)[0]. '<br>Runcard/Lot No.: ' . $oqcLotApp[0]->lot_batch_no . '<br>Serial No./WW/Print Lot No.: ' . $oqcLotApp[0]->print_lot . '<br>Actual Lot Quantity: ' . $ttl . '<br>No. of Label of how many tray/boxes: ' . $prd_runcards_counter[$request->id] . '/' . $sticker_cnt;
@@ -195,6 +235,7 @@ class OQCLotAppController extends Controller
             // return $lot_start_counter;
             $ttl_lot_qtt_box = 0;
         }
+
         // end
 
         // return $lot_start_counter . " - " . ( $lot_number - 1 ) . " - " . $device[0]->ship_boxing . " - " . $device[0]->boxing . " - " . (  (int)$device[0]->ship_boxing / (int)$device[0]->boxing );
@@ -218,32 +259,46 @@ class OQCLotAppController extends Controller
                 }
             }
 
-            // return $list_of_name_and_qtt_done;
+            // $item = $list_of_name_and_qtt_done[$index];
 
-            if( $list_of_name_and_qtt_done[$index]->ct_area == $list_of_name_and_qtt_done[$index]->terminal_area ){
+            // // Safely format ct_area name
+            // $ct_mm = explode(' ', trim($item->ct_area_info->name ?? ''));
+            // $ct_first = $ct_mm[0] ?? '';
+            // $ct_middle = rtrim($ct_mm[1] ?? '', '.');
+            // $ct_name = trim($ct_first . ' ' . $ct_middle);
 
+            // // Safely format terminal_area name, checking that the second part actually has text
+            // $term_mm = explode(' ', trim($item->terminal_area_info->name ?? ''));
+            // $term_first = $term_mm[0] ?? '';
+            // $term_last_initial = '';
+            // if (!empty($term_mm[1])) {
+            //     $term_last_initial = strtoupper($term_mm[1][0]) . '.';
+            // }
+            // $term_name = trim($term_first . ' ' . $term_last_initial);
 
-                $mm = explode(' ', $list_of_name_and_qtt_done[$index]->ct_area_info->name);
-                // $name .= $mm[0] . ' ' . $mm[2][0] . '.';
-                if( count($mm) == 3 )
-                    $name .= $mm[0] . ' ' . $mm[2][0] . '.';
-                else
-                    $name .= $mm[0] . ' ' . $mm[1][0] . '.';
-            }else{
-                $mm = explode(' ', $list_of_name_and_qtt_done[$index]->ct_area_info->name);
-                // $name .= $mm[0] . ' ' . $mm[2][0] . '., ';
-                if( count($mm) == 3 )
-                    $name .= $mm[0] . ' ' . $mm[2][0] . '., ';
-                else
-                    $name .= $mm[0] . ' ' . $mm[1][0] . '., ';
-                $mm = explode(' ', $list_of_name_and_qtt_done[$index]->terminal_area_info->name);
-                // $name .= $mm[0] . ' ' . $mm[2][0] . '.';
-                if( count($mm) == 3 )
-                    $name .= $mm[0] . ' ' . $mm[2][0] . '.';
-                else
-                    $name .= $mm[0] . ' ' . $mm[1][0] . '.';
-            }
-            // $fviname = strtoupper($name);
+            // // Combine and uppercase
+            // $name = trim($ct_name) . ',' . trim($term_name);
+            // $fviname = strtoupper(trim($name, ', '));
+            $item = $list_of_name_and_qtt_done[$index];
+
+            $ctName       = isset($item->ct_area_info->name)       ? $item->ct_area_info->name       : '';
+            $terminalName = isset($item->terminal_area_info->name) ? $item->terminal_area_info->name : '';
+
+            // if ($item->ct_area == $item->terminal_area) {
+                // Same area — show only one name
+                $name .= OqcLotAppController::formatName($ctName);
+            // } else {
+                // Different areas — show both names separated by comma
+                $formattedCt       = OqcLotAppController::formatName($ctName);
+                $formattedTerminal = OqcLotAppController::formatName($terminalName);
+
+                $name .= $formattedCt;
+                if ($formattedTerminal) {
+                    $name .= ', ' . $formattedTerminal;
+                }
+            // }
+
+            strtoupper($name);
             $fviname = $name;
 
             if( $ttl >= $qtt_tray )
@@ -260,6 +315,7 @@ class OQCLotAppController extends Controller
                 'oqc_lotapp_qtt_tray' => $qtt_tray,
                 'oqc_lotapp_lot_sticker_cnt' => ($lot_start_counter + $i) . '/' . ($lot_start_counter + $sticker_cnt),
             ];
+
             $obj_qr_detail = json_encode($arr_qr_detail);
             $qrcode = QrCode::format('png')
             ->size(250)->errorCorrection('H')
@@ -270,7 +326,7 @@ class OQCLotAppController extends Controller
             // $word_wrap = wordwrap(explode(' - ', $device[0]->name)[0],15,"<br>\n");
             // $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'.$word_wrap . '</b><br>' .
 
-            $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'. explode(' - ', $device[0]->name)[0]. '</b><br>' .
+          $data[] = array('img' => $lcl_QrCode, 'text' => '<b><br>' .$oqcLotApp[0]->po_no . '</b><br>' . '<b>'. explode(' - ', $device[0]->name)[0]. '</b><br>' .
                 $runcards[0]->runcard_no . '</b><br>' .
                 $fviname . '<br>' .
                 $serial_no_html .
@@ -280,9 +336,14 @@ class OQCLotAppController extends Controller
                 ($lot_start_counter + $i) . '/' . ($lot_start_counter + $sticker_cnt).'</b>');
                 // (1) . '/' . (1).'</b>'); // tempo 08102023
 
-            $lbl = 'PO no.: ' . $oqcLotApp[0]->po_no . '<br>Device name: ' . explode(' - ', $device[0]->name)[0]. '<br>Lot no.: ' . $runcards[0]->runcard_no . '<br>FVI name: ' . $fviname . '<br>Actual lot quantity: ' . $ttl . '<br>Quantity per tray: ' . $qtt_tray . '<br>Count of tray/total tray per lot: ' . $prd_runcards_counter[$request->id] . '/' . $sticker_cnt;
+          $lbl = 'PO no.: ' . $oqcLotApp[0]->po_no . '<br>Device name: ' . explode(' - ', $device[0]->name)[0]. '<br>Lot no.: ' . $runcards[0]->runcard_no . '<br>FVI name: ' . $fviname . '<br>Actual lot quantity: ' . $ttl . '<br>Quantity per tray: ' . $qtt_tray . '<br>Count of tray/total tray per lot: ' . $prd_runcards_counter[$request->id] . '/' . $sticker_cnt;
         }
-        return response()->json(['QrCode' => $QrCode, 'label' => $lbl, 'label_hidden' => $data, '_stations__' => $_stations__,'obj_qr_detail'=>$obj_qr_detail, 'test_clark'=>ceil(  (int)$device[0]->ship_boxing / (int)$device[0]->boxing )]);
+        // return $QrCode;
+        // return $lbl;
+        // return $_stations__;
+        // return $obj_qr_detail;
+        // return $obj_qr_detail;
+        return response()->json(['QrCode' => $QrCode, 'label' => $lbl, 'label_hidden' => $data, '_stations__' => $_stations__,'obj_qr_detail'=>$obj_qr_detail]);
     }
     public function generate_qrcode_for_oqc_lot_app_yest(Request $request)
     {

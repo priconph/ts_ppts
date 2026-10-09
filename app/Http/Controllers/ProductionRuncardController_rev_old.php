@@ -3429,15 +3429,16 @@ class ProductionRuncardController_rev extends Controller
     }
 
     public function get_prod_runcard_by_id(Request $request){
+        return 'true3';
         date_default_timezone_set('Asia/Manila');
         $prod_runcard = ProductionRuncard::with([
                                 'prod_runcard_material_list' => function($query){
                                     $query->where('status', 1);
                                 },
-                                'supervisor_prod_info',
-                                'supervisor_qc_info',
-                                'eng_qualification_info',
-                                'qc_stamp_qualification_info',
+                                // 'supervisor_prod_info',
+                                // 'supervisor_qc_info',
+                                // 'eng_qualification_info',
+                                // 'qc_stamp_qualification_info',
                             ])
                             ->where('id', $request->prod_runcard_id)
                             ->first();
@@ -4979,7 +4980,7 @@ class ProductionRuncardController_rev extends Controller
     }
 
     public function edit_prod_runcard_station1(Request $request){
-        // return 'work';
+        return 'working function';
         date_default_timezone_set('Asia/Manila');
         $return_title = '<i class="fa fa-check-circle text-success"></i> Saved';
         $return_body = 'Record has been saved.';

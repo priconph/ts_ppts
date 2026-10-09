@@ -300,14 +300,16 @@ class TSPTSController extends Controller
     public function load_oqcvir_pts_table(Request $request)
     {
 
-        $subPO = substr($request->po_num, 0, 15); // added by migs and jd 11-06-2023
+        $poNum = $request->po_num ?? "";
+        $suffixMatch = preg_match('/-(A|A1|B|B1)$/', $poNum);
+        $dashOneMatch = str_contains($poNum, '-1');
         $oqcvirs = ProductionRuncard::with(['prod_runcard_station_many_details' => function($query){
             $query->where('status', 1);
         },'prod_runcard_accessory_info','tspts_oqcvir_info' => function($query){
             $query->orderBy('created_at','desc');
         },'tspts_oqcvir_info.inspector_info',
         'production_runcards_device'])
-        ->where('po_no', $subPO)
+        ->where('po_no', $poNum)
         ->whereNull('deleted_at')
         // ->where('status',4)
         ->where('status','>=',3)
